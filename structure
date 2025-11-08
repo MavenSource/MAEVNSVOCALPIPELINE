@@ -1,0 +1,41 @@
+MAEVN/
+│
+├── CMakeLists.txt          # Build config (JUCE + ONNX Runtime)
+├── README.md               # This file
+│
+├── Source/                 # Core source
+│   ├── PluginProcessor.*   # processBlock(), DAW I/O
+│   ├── PluginEditor.*      # GUI editor
+│   ├── OnnxEngine.*        # ONNX runtime C++ wrapper
+│   ├── PatternEngine.*     # Stage-script parser + arrangement
+│   ├── AIFXEngine.*        # Hybrid DSP + AI FX
+│   ├── TimelineLane.*      # Track lane GUI + FX toggles
+│   ├── FXPreset.*          # FX preset schema
+│   ├── FXPresetManager.*   # Preset I/O
+│   ├── PresetBrowserComponent.* # Preset browser UI
+│   ├── GlobalUndoManager.* # Undo/redo system
+│   ├── UndoHistoryComponent.* # History panel UI
+│   └── Utilities.h         # Shared helpers
+│
+├── Models/                 # ONNX models (auto-detected)
+│   ├── drums/
+│   │   ├── 808_ddsp.onnx
+│   │   ├── hihat_ddsp.onnx
+│   │   └── snare_ddsp.onnx
+│   ├── instruments/
+│   │   ├── piano_ddsp.onnx
+│   │   └── synth_fm.onnx
+│   └── vocals/
+│       ├── vocals_tts.onnx
+│       └── vocals_hifigan.onnx
+│   └── config.json         # Model role → path map
+│
+├── Presets/                # FX presets
+│   ├── RadioVocals.json
+│   ├── Dirty808.json
+│   └── WideHats.json
+│
+├── Resources/              # Icons, UI skins
+│
+├── setup_maevn_repo.bat    # Prepares repo tree + config.json
+└── build_maevn_onnx.bat    # Exports default instrument ONNX models
