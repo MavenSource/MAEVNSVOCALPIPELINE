@@ -1,0 +1,51 @@
+# Build directories
+Build/
+build/
+cmake-build-*/
+out/
+
+# IDE files
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.sln.docstates
+
+# Build artifacts
+*.vst3
+*.dll
+*.so
+*.dylib
+*.exe
+*.pdb
+*.ilk
+*.obj
+*.o
+*.a
+*.lib
+
+# ONNX Runtime
+onnxruntime/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+.venv/
+
+# Temporary files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# JUCE
+JuceLibraryCode/
+Builds/
+
+# Models (optional - exclude if too large)
+# Models/**/*.onnx

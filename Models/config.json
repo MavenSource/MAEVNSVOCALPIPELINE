@@ -1,0 +1,9 @@
+{
+  "808": "drums/808_ddsp.onnx",
+  "hihat": "drums/hihat_ddsp.onnx",
+  "snare": "drums/snare_ddsp.onnx",
+  "piano": "instruments/piano_ddsp.onnx",
+  "synth": "instruments/synth_fm.onnx",
+  "vocal_tts": "vocals/vocals_tts.onnx",
+  "vocal_hifigan": "vocals/vocals_hifigan.onnx"
+}

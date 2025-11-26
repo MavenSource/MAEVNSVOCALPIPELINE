@@ -1,0 +1,19 @@
+{
+  "name": "WideHats",
+  "mode": 1,
+  "category": "HiHat",
+  "description": "Wide stereo hi-hats with brightness",
+  "author": "MAEVN Team",
+  "tags": ["Trap", "Wide", "Bright", "Clean"],
+  "params": {
+    "eqLowGain": -6.0,
+    "eqMidGain": 0.0,
+    "eqHighGain": 4.0,
+    "reverbRoomSize": 0.2,
+    "reverbDamping": 0.3,
+    "reverbWetLevel": 0.15,
+    "reverbDryLevel": 0.85,
+    "limiterThreshold": -2.0,
+    "limiterRelease": 25.0
+  }
+}

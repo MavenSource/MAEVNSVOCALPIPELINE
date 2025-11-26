@@ -1,0 +1,23 @@
+{
+  "name": "RadioVocals",
+  "mode": 3,
+  "category": "Vocal",
+  "description": "Classic radio vocal processing with AI enhancement",
+  "author": "MAEVN Team",
+  "tags": ["Radio", "Clean", "Trap", "AI", "Hybrid"],
+  "params": {
+    "compressorThreshold": -12.0,
+    "compressorRatio": 4.0,
+    "compressorAttack": 5.0,
+    "compressorRelease": 100.0,
+    "eqLowGain": -2.0,
+    "eqMidGain": 2.0,
+    "eqHighGain": 3.0,
+    "reverbRoomSize": 0.3,
+    "reverbDamping": 0.6,
+    "reverbWetLevel": 0.2,
+    "reverbDryLevel": 0.8,
+    "limiterThreshold": -1.0,
+    "limiterRelease": 50.0
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Dirty808",
+  "mode": 1,
+  "category": "808",
+  "description": "Heavy distorted 808 bass with punch",
+  "author": "MAEVN Team",
+  "tags": ["Trap", "Dirty", "Bass", "Compressed"],
+  "params": {
+    "compressorThreshold": -18.0,
+    "compressorRatio": 8.0,
+    "compressorAttack": 1.0,
+    "compressorRelease": 150.0,
+    "eqLowGain": 6.0,
+    "eqMidGain": -3.0,
+    "eqHighGain": -6.0,
+    "limiterThreshold": -0.5,
+    "limiterRelease": 30.0
+  }
+}
