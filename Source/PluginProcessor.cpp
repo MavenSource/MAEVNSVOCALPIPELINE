@@ -17,6 +17,7 @@ MAEVNAudioProcessor::MAEVNAudioProcessor()
     , aiFXEngine(&onnxEngine)
     , currentSampleRate(44100.0)
     , currentBlockSize(512)
+    , cinematicEnhancerEnabled(true)
 {
     // Initialize ONNX engine
     onnxEngine.initialize();
@@ -24,7 +25,10 @@ MAEVNAudioProcessor::MAEVNAudioProcessor()
     // Load models and presets
     initializeModelsAndPresets();
     
-    Logger::log(Logger::Level::Info, "MAEVN Audio Processor initialized");
+    // Apply default cinematic vocal preset
+    cinematicEnhancer.applyCinematicVocalPreset();
+    
+    Logger::log(Logger::Level::Info, "MAEVN Audio Processor initialized with Cinematic Enhancer");
 }
 
 MAEVNAudioProcessor::~MAEVNAudioProcessor()
@@ -92,6 +96,9 @@ void MAEVNAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     // Prepare AI FX engine
     aiFXEngine.prepare(sampleRate, samplesPerBlock);
     
+    // Prepare Cinematic Audio Enhancer
+    cinematicEnhancer.prepare(sampleRate, samplesPerBlock);
+    
     // Allocate track buffers
     for (auto& buffer : trackBuffers)
     {
@@ -105,6 +112,7 @@ void MAEVNAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 void MAEVNAudioProcessor::releaseResources()
 {
     aiFXEngine.reset();
+    cinematicEnhancer.reset();
 }
 
 bool MAEVNAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
@@ -137,6 +145,12 @@ void MAEVNAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
     // Process all tracks with FX
     processAllTracks(buffer, numSamples);
     
+    // Apply Cinematic Audio Enhancement (final processing stage)
+    if (cinematicEnhancerEnabled)
+    {
+        cinematicEnhancer.process(buffer, numSamples);
+    }
+    
     juce::ignoreUnused(midiMessages);
 }
 
@@ -158,6 +172,7 @@ void MAEVNAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
     auto* obj = new juce::DynamicObject();
     
     obj->setProperty("bpm", patternEngine.getBPM());
+    obj->setProperty("cinematicEnhancerEnabled", cinematicEnhancerEnabled);
     
     // Save FX modes for each track
     juce::Array<juce::var> fxModes;
@@ -185,6 +200,11 @@ void MAEVNAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
         if (obj->hasProperty("bpm"))
         {
             patternEngine.setBPM(obj->getProperty("bpm"));
+        }
+        
+        if (obj->hasProperty("cinematicEnhancerEnabled"))
+        {
+            cinematicEnhancerEnabled = obj->getProperty("cinematicEnhancerEnabled");
         }
         
         if (obj->hasProperty("fxModes"))

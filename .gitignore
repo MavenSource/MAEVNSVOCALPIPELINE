@@ -49,3 +49,4 @@ Builds/
 
 # Models (optional - exclude if too large)
 # Models/**/*.onnx
+_codeql_detected_source_root
