@@ -144,7 +144,9 @@ void GentleCompressor::prepare(double sampleRate, int maxBlockSize)
 
 void GentleCompressor::process(juce::AudioBuffer<float>& buffer, int numSamples)
 {
-    juce::dsp::AudioBlock<float> block(buffer);
+    juce::dsp::AudioBlock<float> block(buffer.getArrayOfWritePointers(), 
+                                        buffer.getNumChannels(), 
+                                        static_cast<size_t>(numSamples));
     juce::dsp::ProcessContextReplacing<float> context(block);
     compressor.process(context);
 }
@@ -381,7 +383,9 @@ void ModulationEffect::prepare(double sampleRate, int maxBlockSize)
 
 void ModulationEffect::process(juce::AudioBuffer<float>& buffer, int numSamples)
 {
-    juce::dsp::AudioBlock<float> block(buffer);
+    juce::dsp::AudioBlock<float> block(buffer.getArrayOfWritePointers(), 
+                                        buffer.getNumChannels(), 
+                                        static_cast<size_t>(numSamples));
     juce::dsp::ProcessContextReplacing<float> context(block);
     chorus.process(context);
 }
@@ -552,9 +556,15 @@ void MultibandCompressor::process(juce::AudioBuffer<float>& buffer, int numSampl
     }
     
     // Apply compression to each band
-    juce::dsp::AudioBlock<float> lowCompBlock(lowBandBuffer);
-    juce::dsp::AudioBlock<float> midCompBlock(midBandBuffer);
-    juce::dsp::AudioBlock<float> highCompBlock(highBandBuffer);
+    juce::dsp::AudioBlock<float> lowCompBlock(lowBandBuffer.getArrayOfWritePointers(), 
+                                               lowBandBuffer.getNumChannels(), 
+                                               static_cast<size_t>(numSamples));
+    juce::dsp::AudioBlock<float> midCompBlock(midBandBuffer.getArrayOfWritePointers(), 
+                                               midBandBuffer.getNumChannels(), 
+                                               static_cast<size_t>(numSamples));
+    juce::dsp::AudioBlock<float> highCompBlock(highBandBuffer.getArrayOfWritePointers(), 
+                                                highBandBuffer.getNumChannels(), 
+                                                static_cast<size_t>(numSamples));
     
     juce::dsp::ProcessContextReplacing<float> lowCompContext(lowCompBlock);
     juce::dsp::ProcessContextReplacing<float> midCompContext(midCompBlock);
@@ -794,9 +804,11 @@ void FinalLimiter::prepare(double sampleRate, int maxBlockSize)
     limiter.prepare(spec);
 }
 
-void FinalLimiter::process(juce::AudioBuffer<float>& buffer, int /*numSamples*/)
+void FinalLimiter::process(juce::AudioBuffer<float>& buffer, int numSamples)
 {
-    juce::dsp::AudioBlock<float> block(buffer);
+    juce::dsp::AudioBlock<float> block(buffer.getArrayOfWritePointers(), 
+                                        buffer.getNumChannels(), 
+                                        static_cast<size_t>(numSamples));
     juce::dsp::ProcessContextReplacing<float> context(block);
     limiter.process(context);
 }
