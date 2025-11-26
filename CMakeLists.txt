@@ -62,6 +62,8 @@ target_sources(MAEVN
         Source/PatternEngine.h
         Source/AIFXEngine.cpp
         Source/AIFXEngine.h
+        Source/CinematicAudioEnhancer.cpp
+        Source/CinematicAudioEnhancer.h
         Source/TimelineLane.cpp
         Source/TimelineLane.h
         Source/FXPreset.cpp

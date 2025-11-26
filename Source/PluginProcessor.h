@@ -12,6 +12,7 @@
 #include "OnnxEngine.h"
 #include "PatternEngine.h"
 #include "AIFXEngine.h"
+#include "CinematicAudioEnhancer.h"
 #include "FXPresetManager.h"
 #include "GlobalUndoManager.h"
 #include "Utilities.h"
@@ -61,19 +62,29 @@ public:
     OnnxEngine& getOnnxEngine() { return onnxEngine; }
     PatternEngine& getPatternEngine() { return patternEngine; }
     AIFXEngine& getAIFXEngine() { return aiFXEngine; }
+    CinematicAudioEnhancer& getCinematicEnhancer() { return cinematicEnhancer; }
     FXPresetManager& getPresetManager() { return presetManager; }
     GlobalUndoManager& getUndoManager() { return undoManager; }
+    
+    //==============================================================================
+    // Cinematic enhancement control
+    void setCinematicEnhancerEnabled(bool enabled) { cinematicEnhancerEnabled = enabled; }
+    bool isCinematicEnhancerEnabled() const { return cinematicEnhancerEnabled; }
     
 private:
     //==============================================================================
     OnnxEngine onnxEngine;
     PatternEngine patternEngine;
     AIFXEngine aiFXEngine;
+    CinematicAudioEnhancer cinematicEnhancer;
     FXPresetManager presetManager;
     GlobalUndoManager undoManager;
     
     double currentSampleRate;
     int currentBlockSize;
+    
+    // Cinematic enhancer enable flag
+    bool cinematicEnhancerEnabled;
     
     // Audio buffers for track processing
     std::array<juce::AudioBuffer<float>, 6> trackBuffers; // 6 tracks

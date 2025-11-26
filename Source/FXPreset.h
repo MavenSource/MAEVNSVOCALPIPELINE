@@ -200,6 +200,19 @@ namespace PresetTags
     static const juce::String AI = "AI";
     static const juce::String Hybrid = "Hybrid";
     
+    // Cinematic Audio Enhancement Tags
+    static const juce::String Cinematic = "Cinematic";
+    static const juce::String Grammy = "Grammy";
+    static const juce::String Emotional = "Emotional";
+    static const juce::String Viral = "Viral";
+    static const juce::String Mastering = "Mastering";
+    static const juce::String Presence = "Presence";
+    static const juce::String LargeHall = "LargeHall";
+    static const juce::String Saturation = "Saturation";
+    static const juce::String Multiband = "Multiband";
+    static const juce::String StereoWide = "StereoWide";
+    static const juce::String LUFS14 = "LUFS14";
+    
     /**
      * @brief Get all common tags
      */
@@ -207,7 +220,9 @@ namespace PresetTags
     {
         return juce::StringArray {
             Trap, Clean, Dirty, Radio, Wide, Mono, Warm, Bright, Dark,
-            Compressed, Dynamic, Reverb, Delay, Distortion, Vintage, Modern, AI, Hybrid
+            Compressed, Dynamic, Reverb, Delay, Distortion, Vintage, Modern, AI, Hybrid,
+            Cinematic, Grammy, Emotional, Viral, Mastering, Presence, LargeHall,
+            Saturation, Multiband, StereoWide, LUFS14
         };
     }
 }
