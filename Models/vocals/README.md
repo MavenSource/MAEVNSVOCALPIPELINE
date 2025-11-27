@@ -20,6 +20,7 @@ You can:
 - Input/Output format should be compatible with the ONNX Runtime
 - TTS model should accept text embeddings and output mel-spectrograms
 - HiFi-GAN should accept mel-spectrograms and output waveforms
+- **ONNX opset version 18 or higher** is recommended for compatibility with the MAEVN plugin
 
 ## Example Export
 
