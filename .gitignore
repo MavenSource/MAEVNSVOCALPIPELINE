@@ -49,4 +49,7 @@ Builds/
 
 # Models (optional - exclude if too large)
 # Models/**/*.onnx
+
+# ONNX external data files (model weights - regenerate with export script)
+*.onnx.data
 _codeql_detected_source_root

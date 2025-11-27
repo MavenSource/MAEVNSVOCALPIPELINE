@@ -93,7 +93,7 @@ def export_model(model, dummy_input, output_path, model_name):
         dummy_input,
         output_path,
         export_params=True,
-        opset_version=13,
+        opset_version=18,
         do_constant_folding=True,
         input_names=['input'],
         output_names=['output'],
