@@ -253,14 +253,9 @@ int OnnxEngine::loadModelsFromConfig(const juce::String& configPath)
         juce::String role = prop.name.toString();
         juce::String path = prop.value.toString();
         
-        // Make path absolute if relative
-        juce::File modelFile(path);
-        if (!modelFile.exists())
-        {
-            // Try relative to config file directory
-            juce::File baseDir = configFile.getParentDirectory();
-            modelFile = baseDir.getChildFile(path);
-        }
+        // Make path absolute if relative (paths in config.json are typically relative)
+        juce::File baseDir = configFile.getParentDirectory();
+        juce::File modelFile = baseDir.getChildFile(path);
         
         if (loadModel(role, modelFile.getFullPathName()))
             loadedCount++;

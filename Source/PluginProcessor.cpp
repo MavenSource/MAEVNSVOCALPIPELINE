@@ -272,9 +272,8 @@ void MAEVNAudioProcessor::updateTransportInfo()
         {
             // Update pattern engine with transport info
             bool isPlaying = posInfo->getIsPlaying();
-            double timeInSeconds = 0.0;
-            if (auto timeInSecondsOpt = posInfo->getTimeInSeconds())
-                timeInSeconds = *timeInSecondsOpt;
+            auto timeOpt = posInfo->getTimeInSeconds();
+            double timeInSeconds = timeOpt.hasValue() ? *timeOpt : 0.0;
             patternEngine.updateTransport(isPlaying, timeInSeconds);
             
             // Update BPM if it changed
