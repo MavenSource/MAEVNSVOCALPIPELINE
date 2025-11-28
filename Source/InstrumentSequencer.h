@@ -19,6 +19,12 @@ namespace MAEVN
 {
 
 //==============================================================================
+// Sequencer Constants
+//==============================================================================
+constexpr float MIN_STEP_VELOCITY = 0.1f;   ///< Minimum velocity to ensure audibility
+constexpr float MAX_STEP_VELOCITY = 1.0f;   ///< Maximum velocity (full volume)
+
+//==============================================================================
 /**
  * @brief Step note data for sequencer
  */

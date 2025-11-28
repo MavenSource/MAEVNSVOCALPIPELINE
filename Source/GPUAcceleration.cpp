@@ -268,7 +268,13 @@ void GPUAccelerationManager::detectDevices()
     availableDevices.clear();
     gpuAvailable = false;
     
-    // Check for CUDA devices (simulated)
+    // NOTE: This is placeholder/simulation code for GPU device detection.
+    // In a production implementation, actual GPU detection would use:
+    // - CUDA: cudaGetDeviceCount() and cudaGetDeviceProperties()
+    // - DirectML: ID3D12Device enumeration
+    // - CoreML: MLModel availability check
+    // The simulated memory values represent typical mid-range GPU specifications.
+    
 #ifdef _WIN32
     // On Windows, check for CUDA and DirectML
     {
@@ -276,8 +282,9 @@ void GPUAccelerationManager::detectDevices()
         cudaDevice.name = "NVIDIA GPU (CUDA)";
         cudaDevice.backend = GPUBackend::CUDA;
         cudaDevice.deviceIndex = 0;
-        cudaDevice.totalMemory = 8ULL * 1024 * 1024 * 1024; // 8GB simulated
-        cudaDevice.freeMemory = 6ULL * 1024 * 1024 * 1024;  // 6GB free
+        // Simulated memory values - in production, use cudaMemGetInfo()
+        cudaDevice.totalMemory = 8ULL * 1024 * 1024 * 1024; // 8GB simulated (typical GTX 1080)
+        cudaDevice.freeMemory = 6ULL * 1024 * 1024 * 1024;  // 6GB free (accounting for OS usage)
         cudaDevice.isAvailable = false; // Actual CUDA check would go here
         cudaDevice.computeCapability = 7.5f;
         availableDevices.push_back(cudaDevice);
@@ -288,6 +295,7 @@ void GPUAccelerationManager::detectDevices()
         dmlDevice.name = "DirectX 12 GPU (DirectML)";
         dmlDevice.backend = GPUBackend::DirectML;
         dmlDevice.deviceIndex = 0;
+        // Simulated memory values - in production, use DXGI adapter enumeration
         dmlDevice.totalMemory = 8ULL * 1024 * 1024 * 1024;
         dmlDevice.freeMemory = 6ULL * 1024 * 1024 * 1024;
         dmlDevice.isAvailable = true; // DirectML is generally available on Windows 10+

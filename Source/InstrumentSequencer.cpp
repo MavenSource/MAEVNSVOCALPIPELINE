@@ -166,7 +166,7 @@ void HiHatRollGenerator::applyVelocityVariation(SequencerPattern& pattern, float
         if (step.active)
         {
             float delta = (random.nextFloat() - 0.5f) * 2.0f * variation;
-            step.velocity = clamp(step.velocity + delta, 0.1f, 1.0f);
+            step.velocity = clamp(step.velocity + delta, MIN_STEP_VELOCITY, MAX_STEP_VELOCITY);
         }
     }
 }
