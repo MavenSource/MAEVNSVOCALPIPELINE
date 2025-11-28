@@ -255,8 +255,9 @@ int OnnxEngine::loadModelsFromConfig(const juce::String& configPath)
         
         // Make path absolute if relative
         juce::File modelFile(path);
-        if (modelFile.isRelative())
+        if (!modelFile.exists())
         {
+            // Try relative to config file directory
             juce::File baseDir = configFile.getParentDirectory();
             modelFile = baseDir.getChildFile(path);
         }
