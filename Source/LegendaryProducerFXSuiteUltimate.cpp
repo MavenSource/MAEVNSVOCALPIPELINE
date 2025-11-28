@@ -414,6 +414,9 @@ float LegendaryProducerFXSuiteUltimateAudioProcessor::estimatePitch(const juce::
 // LegendaryProducerFXSuiteUltimateAudioProcessorEditor Implementation
 //==============================================================================
 
+// Meter update rate in Hz
+static constexpr int METER_UPDATE_RATE_HZ = 30;
+
 LegendaryProducerFXSuiteUltimateAudioProcessorEditor::LegendaryProducerFXSuiteUltimateAudioProcessorEditor(
     LegendaryProducerFXSuiteUltimateAudioProcessor& p)
     : AudioProcessorEditor(&p)
@@ -452,8 +455,8 @@ LegendaryProducerFXSuiteUltimateAudioProcessorEditor::LegendaryProducerFXSuiteUl
     addAndMakeVisible(outputLevelLabel);
     outputLevelLabel.setText("Output: 0 dB", juce::dontSendNotification);
     
-    // Start meter update timer (30 Hz refresh rate)
-    startTimerHz(30);
+    // Start meter update timer
+    startTimerHz(METER_UPDATE_RATE_HZ);
     
     Logger::log(Logger::Level::Info, "LegendaryProducerFXSuiteUltimate Editor initialized");
 }

@@ -212,6 +212,12 @@ private:
 class TransientShaper
 {
 public:
+    // Constants for transient shaping calculations
+    static constexpr float ATTACK_SCALING_FACTOR = 10.0f;
+    static constexpr float SUSTAIN_SCALING_FACTOR = 0.5f;
+    static constexpr float MIN_GAIN = 0.1f;
+    static constexpr float MAX_GAIN = 4.0f;
+    
     TransientShaper()
         : attackAmount(0.0f)
         , sustainAmount(0.0f)
@@ -259,15 +265,15 @@ public:
             if (envelopeDelta > 0.0f)
             {
                 // Attack phase - apply attack shaping
-                transientGain += attackAmount * envelopeDelta * 10.0f;
+                transientGain += attackAmount * envelopeDelta * ATTACK_SCALING_FACTOR;
             }
             else
             {
                 // Sustain phase - apply sustain shaping
-                transientGain += sustainAmount * 0.5f;
+                transientGain += sustainAmount * SUSTAIN_SCALING_FACTOR;
             }
             
-            transientGain = juce::jlimit(0.1f, 4.0f, transientGain);
+            transientGain = juce::jlimit(MIN_GAIN, MAX_GAIN, transientGain);
             
             // Apply gain to all channels
             for (int ch = 0; ch < numChannels; ++ch)
@@ -418,6 +424,9 @@ private:
 class Saturation
 {
 public:
+    // Drive scaling factor for saturation intensity
+    static constexpr float DRIVE_SCALING_FACTOR = 10.0f;
+    
     Saturation()
         : drive(0.5f)
         , tone(0.5f)
@@ -447,7 +456,7 @@ public:
             for (int i = 0; i < numSamples; ++i)
             {
                 // Apply drive
-                float input = data[i] * (1.0f + drive * 10.0f);
+                float input = data[i] * (1.0f + drive * DRIVE_SCALING_FACTOR);
                 
                 // Soft clipping saturation (tanh waveshaper)
                 float saturated = std::tanh(input);
@@ -638,6 +647,10 @@ private:
 class PTHVocalClone
 {
 public:
+    // Constants for pitch drift calculation
+    static constexpr float DRIFT_FREQUENCY_FACTOR = 0.001f;
+    static constexpr float DRIFT_AMPLITUDE_FACTOR = 0.01f;
+    
     PTHVocalClone()
         : pitchCorrection(0.0f)  // semitones (-12 to +12)
         , correctionSpeed(50.0f) // ms (10 to 100)
@@ -699,7 +712,7 @@ public:
             for (int i = 0; i < numSamples; ++i)
             {
                 // Add subtle pitch drift for natural sound
-                float driftAmount = (std::sin(static_cast<float>(i) * 0.001f) * pitchDrift * 0.01f);
+                float driftAmount = (std::sin(static_cast<float>(i) * DRIFT_FREQUENCY_FACTOR) * pitchDrift * DRIFT_AMPLITUDE_FACTOR);
                 data[i] *= (1.0f + driftAmount);
             }
         }
@@ -807,6 +820,11 @@ private:
 class EpicSpaceReverb
 {
 public:
+    // Constants for reverb calculations
+    static constexpr float EARLY_REFLECTIONS_MIX = 0.3f;
+    static constexpr float ER_DECAY_FACTOR = 0.1f;
+    static constexpr float ROOM_SHAPE_OFFSET = 0.5f;
+    
     EpicSpaceReverb()
         : roomSize(0.7f)
         , decayTime(2.5f)
@@ -888,12 +906,12 @@ public:
                         earlyReflectionDelays[er].pushSample(ch, wetData[i]);
                         
                         // Apply room shape (affects reflection pattern)
-                        float erGain = (1.0f - static_cast<float>(er) * 0.1f) * earlyReflections;
-                        erGain *= (0.5f + roomShape * 0.5f);
+                        float erGain = (1.0f - static_cast<float>(er) * ER_DECAY_FACTOR) * earlyReflections;
+                        erGain *= (ROOM_SHAPE_OFFSET + roomShape * ROOM_SHAPE_OFFSET);
                         earlySum += erSample * erGain;
                     }
                     
-                    wetData[i] += earlySum * 0.3f;
+                    wetData[i] += earlySum * EARLY_REFLECTIONS_MIX;
                 }
             }
         }
