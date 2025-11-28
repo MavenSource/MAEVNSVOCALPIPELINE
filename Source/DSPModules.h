@@ -92,15 +92,17 @@ public:
         highCrossover.process(highContext);
         
         // Mid band = original - low - high
+        // midBandBuffer still contains the original input at this point
         for (int ch = 0; ch < numChannels; ++ch)
         {
             auto* midData = midBandBuffer.getWritePointer(ch);
+            const auto* originalData = buffer.getReadPointer(ch);
             const auto* lowData = lowBandBuffer.getReadPointer(ch);
             const auto* highData = highBandBuffer.getReadPointer(ch);
             
             for (int i = 0; i < numSamples; ++i)
             {
-                midData[i] = midData[i] - lowData[i] - highData[i];
+                midData[i] = originalData[i] - lowData[i] - highData[i];
             }
         }
         
@@ -984,17 +986,22 @@ private:
     float roomShape;
     double currentSampleRate;
     
+    // Maximum delay line sizes: 192000 samples = ~4 seconds at 48kHz (for pre-delay)
+    // Early reflection delay: 19200 samples = ~400ms at 48kHz (for early reflections)
+    static constexpr int MAX_PRE_DELAY_SAMPLES = 192000;
+    static constexpr int MAX_EARLY_REFLECTION_DELAY_SAMPLES = 19200;
+    
     juce::dsp::Reverb reverb;
-    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> preDelayLine{192000};
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> preDelayLine{MAX_PRE_DELAY_SAMPLES};
     std::array<juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>, 8> earlyReflectionDelays = {{
-        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{19200},
-        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{19200},
-        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{19200},
-        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{19200},
-        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{19200},
-        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{19200},
-        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{19200},
-        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{19200}
+        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{MAX_EARLY_REFLECTION_DELAY_SAMPLES},
+        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{MAX_EARLY_REFLECTION_DELAY_SAMPLES},
+        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{MAX_EARLY_REFLECTION_DELAY_SAMPLES},
+        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{MAX_EARLY_REFLECTION_DELAY_SAMPLES},
+        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{MAX_EARLY_REFLECTION_DELAY_SAMPLES},
+        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{MAX_EARLY_REFLECTION_DELAY_SAMPLES},
+        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{MAX_EARLY_REFLECTION_DELAY_SAMPLES},
+        juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear>{MAX_EARLY_REFLECTION_DELAY_SAMPLES}
     }};
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, 
                                     juce::dsp::IIR::Coefficients<float>> dampingFilter;

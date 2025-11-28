@@ -452,11 +452,20 @@ LegendaryProducerFXSuiteUltimateAudioProcessorEditor::LegendaryProducerFXSuiteUl
     addAndMakeVisible(outputLevelLabel);
     outputLevelLabel.setText("Output: 0 dB", juce::dontSendNotification);
     
+    // Start meter update timer (30 Hz refresh rate)
+    startTimerHz(30);
+    
     Logger::log(Logger::Level::Info, "LegendaryProducerFXSuiteUltimate Editor initialized");
 }
 
 LegendaryProducerFXSuiteUltimateAudioProcessorEditor::~LegendaryProducerFXSuiteUltimateAudioProcessorEditor()
 {
+    stopTimer();
+}
+
+void LegendaryProducerFXSuiteUltimateAudioProcessorEditor::timerCallback()
+{
+    updateMeterDisplay();
 }
 
 void LegendaryProducerFXSuiteUltimateAudioProcessorEditor::paint(juce::Graphics& g)
@@ -611,24 +620,21 @@ void LegendaryProducerFXSuiteUltimateAudioProcessorEditor::setupPTHTab()
     pthVocalCloneToggle.setBounds(20, yPos, 200, height);
     yPos += height + spacing;
     
-    auto* pitchLabel = new juce::Label();
-    pitchLabel->setText("Pitch Correction (semitones):", juce::dontSendNotification);
+    pitchLabel.setText("Pitch Correction (semitones):", juce::dontSendNotification);
     tab->addAndMakeVisible(pitchLabel);
-    pitchLabel->setBounds(20, yPos, 200, height);
+    pitchLabel.setBounds(20, yPos, 200, height);
     pitchCorrectionSlider.setBounds(220, yPos, 300, height);
     yPos += height + spacing;
     
-    auto* brightnessLabel = new juce::Label();
-    brightnessLabel->setText("Brightness:", juce::dontSendNotification);
+    brightnessLabel.setText("Brightness:", juce::dontSendNotification);
     tab->addAndMakeVisible(brightnessLabel);
-    brightnessLabel->setBounds(20, yPos, 200, height);
+    brightnessLabel.setBounds(20, yPos, 200, height);
     brightnessSlider.setBounds(220, yPos, 300, height);
     yPos += height + spacing;
     
-    auto* formantLabel = new juce::Label();
-    formantLabel->setText("Formant Shift (semitones):", juce::dontSendNotification);
+    formantLabel.setText("Formant Shift (semitones):", juce::dontSendNotification);
     tab->addAndMakeVisible(formantLabel);
-    formantLabel->setBounds(20, yPos, 200, height);
+    formantLabel.setBounds(20, yPos, 200, height);
     formantShiftSlider.setBounds(220, yPos, 300, height);
 }
 
@@ -703,38 +709,33 @@ void LegendaryProducerFXSuiteUltimateAudioProcessorEditor::setupReverbTab()
     epicSpaceReverbToggle.setBounds(20, yPos, 200, height);
     yPos += height + spacing;
     
-    auto* roomSizeLabel = new juce::Label();
-    roomSizeLabel->setText("Room Size:", juce::dontSendNotification);
+    roomSizeLabel.setText("Room Size:", juce::dontSendNotification);
     tab->addAndMakeVisible(roomSizeLabel);
-    roomSizeLabel->setBounds(20, yPos, 150, height);
+    roomSizeLabel.setBounds(20, yPos, 150, height);
     roomSizeSlider.setBounds(170, yPos, 300, height);
     yPos += height + spacing;
     
-    auto* decayLabel = new juce::Label();
-    decayLabel->setText("Decay Time (s):", juce::dontSendNotification);
+    decayLabel.setText("Decay Time (s):", juce::dontSendNotification);
     tab->addAndMakeVisible(decayLabel);
-    decayLabel->setBounds(20, yPos, 150, height);
+    decayLabel.setBounds(20, yPos, 150, height);
     decayTimeSlider.setBounds(170, yPos, 300, height);
     yPos += height + spacing;
     
-    auto* dampingLabel = new juce::Label();
-    dampingLabel->setText("Damping:", juce::dontSendNotification);
+    dampingLabel.setText("Damping:", juce::dontSendNotification);
     tab->addAndMakeVisible(dampingLabel);
-    dampingLabel->setBounds(20, yPos, 150, height);
+    dampingLabel.setBounds(20, yPos, 150, height);
     dampingSlider.setBounds(170, yPos, 300, height);
     yPos += height + spacing;
     
-    auto* preDelayLabel = new juce::Label();
-    preDelayLabel->setText("Pre-Delay (ms):", juce::dontSendNotification);
+    preDelayLabel.setText("Pre-Delay (ms):", juce::dontSendNotification);
     tab->addAndMakeVisible(preDelayLabel);
-    preDelayLabel->setBounds(20, yPos, 150, height);
+    preDelayLabel.setBounds(20, yPos, 150, height);
     preDelaySlider.setBounds(170, yPos, 300, height);
     yPos += height + spacing;
     
-    auto* wetDryLabel = new juce::Label();
-    wetDryLabel->setText("Wet/Dry Mix:", juce::dontSendNotification);
+    wetDryLabel.setText("Wet/Dry Mix:", juce::dontSendNotification);
     tab->addAndMakeVisible(wetDryLabel);
-    wetDryLabel->setBounds(20, yPos, 150, height);
+    wetDryLabel.setBounds(20, yPos, 150, height);
     wetDryMixSlider.setBounds(170, yPos, 300, height);
 }
 

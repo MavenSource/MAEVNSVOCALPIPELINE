@@ -188,7 +188,8 @@ private:
  * 
  * GUI editor with tabbed interface for the combined plugin.
  */
-class LegendaryProducerFXSuiteUltimateAudioProcessorEditor : public juce::AudioProcessorEditor
+class LegendaryProducerFXSuiteUltimateAudioProcessorEditor : public juce::AudioProcessorEditor,
+                                                              private juce::Timer
 {
 public:
     LegendaryProducerFXSuiteUltimateAudioProcessorEditor(LegendaryProducerFXSuiteUltimateAudioProcessor&);
@@ -198,6 +199,8 @@ public:
     void resized() override;
 
 private:
+    void timerCallback() override;
+    
     LegendaryProducerFXSuiteUltimateAudioProcessor& audioProcessor;
 
     // Tabbed component for the three main tabs
@@ -216,6 +219,11 @@ private:
     juce::Slider pitchCorrectionSlider;
     juce::Slider brightnessSlider;
     juce::Slider formantShiftSlider;
+    
+    // PTH Tab labels (owned members)
+    juce::Label pitchLabel;
+    juce::Label brightnessLabel;
+    juce::Label formantLabel;
 
     // Reverb Tab components
     juce::ToggleButton epicSpaceReverbToggle{"Epic Space Reverb"};
@@ -224,6 +232,13 @@ private:
     juce::Slider dampingSlider;
     juce::Slider preDelaySlider;
     juce::Slider wetDryMixSlider;
+    
+    // Reverb Tab labels (owned members)
+    juce::Label roomSizeLabel;
+    juce::Label decayLabel;
+    juce::Label dampingLabel;
+    juce::Label preDelayLabel;
+    juce::Label wetDryLabel;
 
     // A/B Comparison button
     juce::TextButton abCompareButton{"A/B"};
@@ -236,8 +251,6 @@ private:
     void setupPTHTab();
     void setupReverbTab();
     void updateMeterDisplay();
-
-    juce::Timer meterTimer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LegendaryProducerFXSuiteUltimateAudioProcessorEditor)
 };
