@@ -211,35 +211,4 @@ public:
     }
 };
 
-//==============================================================================
-// Thread Safety Helpers
-//==============================================================================
-
-/**
- * @brief Thread-safe queue for real-time audio processing
- */
-template<typename T>
-class LockFreeQueue
-{
-public:
-    LockFreeQueue(size_t capacity) : buffer(capacity) {}
-    
-    bool push(const T& item)
-    {
-        if (buffer.push(item))
-            return true;
-        return false;
-    }
-    
-    bool pop(T& item)
-    {
-        if (buffer.pop(item))
-            return true;
-        return false;
-    }
-    
-private:
-    juce::AbstractFifo buffer;
-};
-
 } // namespace MAEVN

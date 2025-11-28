@@ -264,21 +264,25 @@ void MAEVNAudioProcessor::processAllTracks(juce::AudioBuffer<float>& buffer, int
 
 void MAEVNAudioProcessor::updateTransportInfo()
 {
-    auto playHead = getPlayHead();
-    if (playHead != nullptr)
+    auto* playHeadPtr = getPlayHead();
+    if (playHeadPtr != nullptr)
     {
-        juce::AudioPlayHead::CurrentPositionInfo posInfo;
-        if (playHead->getCurrentPosition(posInfo))
+        auto posInfo = playHeadPtr->getPosition();
+        if (posInfo.hasValue())
         {
             // Update pattern engine with transport info
-            patternEngine.updateTransport(posInfo.isPlaying, posInfo.timeInSeconds);
+            bool isPlaying = posInfo->getIsPlaying();
+            auto timeOpt = posInfo->getTimeInSeconds();
+            double timeInSeconds = timeOpt.hasValue() ? *timeOpt : 0.0;
+            patternEngine.updateTransport(isPlaying, timeInSeconds);
             
             // Update BPM if it changed
-            if (posInfo.bpm > 0.0)
+            if (auto bpmOpt = posInfo->getBpm())
             {
-                if (std::abs(posInfo.bpm - patternEngine.getBPM()) > 0.1)
+                double bpm = *bpmOpt;
+                if (bpm > 0.0 && std::abs(bpm - patternEngine.getBPM()) > 0.1)
                 {
-                    patternEngine.setBPM(posInfo.bpm);
+                    patternEngine.setBPM(bpm);
                 }
             }
         }
