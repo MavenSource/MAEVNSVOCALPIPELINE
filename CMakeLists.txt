@@ -77,6 +77,9 @@ target_sources(MAEVN
         Source/UndoHistoryComponent.cpp
         Source/UndoHistoryComponent.h
         Source/Utilities.h
+        Source/DSPModules.h
+        Source/LegendaryProducerFXSuiteUltimate.cpp
+        Source/LegendaryProducerFXSuiteUltimate.h
 )
 
 # Preprocessor definitions
