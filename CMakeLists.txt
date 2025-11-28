@@ -80,6 +80,21 @@ target_sources(MAEVN
         Source/DSPModules.h
         Source/LegendaryProducerFXSuiteUltimate.cpp
         Source/LegendaryProducerFXSuiteUltimate.h
+        # New Production-Ready Features
+        Source/DAWAutomation.cpp
+        Source/DAWAutomation.h
+        Source/DragDropExport.cpp
+        Source/DragDropExport.h
+        Source/LoopRegionSync.cpp
+        Source/LoopRegionSync.h
+        Source/InstrumentSequencer.cpp
+        Source/InstrumentSequencer.h
+        Source/PresetPackManager.cpp
+        Source/PresetPackManager.h
+        Source/GPUAcceleration.cpp
+        Source/GPUAcceleration.h
+        Source/ModelMarketplace.cpp
+        Source/ModelMarketplace.h
 )
 
 # Preprocessor definitions

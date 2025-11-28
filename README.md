@@ -372,13 +372,84 @@ Here's the typical workflow for using MAEVN in your production:
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **DAW Automation Hooks** | 🔜 Planned | Expose FX parameters as DAW-automatable (Ghost Choir, Tone Shaper) |
-| **Drag-to-MIDI/Audio** | 🔜 Planned | Drag `[HOOK]` blocks directly into DAW timeline |
-| **Loop Region Sync** | 🔜 Planned | Auto-fit arrangement to DAW selection |
-| **Instrument Sequencer** | 🔜 Planned | Pattern editor for hi-hat rolls, 808 glides |
-| **Community Preset Packs** | 🔜 Planned | Import/export preset bundles |
-| **GPU Acceleration** | 🔬 Research | CUDA/DirectML support for faster inference |
-| **Model Marketplace** | 🔬 Research | Download community-shared ONNX models |
+| **DAW Automation Hooks** | ✅ Complete | Expose FX parameters as DAW-automatable (Ghost Choir, Tone Shaper) |
+| **Drag-to-MIDI/Audio** | ✅ Complete | Drag `[HOOK]` blocks directly into DAW timeline |
+| **Loop Region Sync** | ✅ Complete | Auto-fit arrangement to DAW selection |
+| **Instrument Sequencer** | ✅ Complete | Pattern editor for hi-hat rolls, 808 glides |
+| **Community Preset Packs** | ✅ Complete | Import/export preset bundles (.maevnpack format) |
+| **GPU Acceleration** | ✅ Complete | CUDA/DirectML/CoreML support infrastructure |
+| **Model Marketplace** | ✅ Complete | Download community-shared ONNX models |
+
+### New Features Documentation
+
+#### 🎛️ DAW Automation Hooks (`DAWAutomation.h/cpp`)
+
+Full DAW automation support with 40+ automatable parameters:
+- **Ghost Choir Effect**: Multi-voice harmony generator with voices, spread, depth, mix controls
+- **Tone Shaper Effect**: Multi-band EQ with presence, warmth, and air controls
+- **Cinematic FX**: Reverb, delay, modulation, and saturation parameters
+- **Track FX Modes**: Per-track FX mode selection (Off/DSP/AI/Hybrid)
+
+```cpp
+// Example: Creating parameter attachments
+auto sliderAttachment = dawAutomation.createSliderAttachment(
+    AutomationIDs::GhostChoirMix, mixSlider);
+```
+
+#### 🎯 Drag-to-MIDI/Audio (`DragDropExport.h/cpp`)
+
+Export timeline blocks directly to DAW:
+- Drag blocks from plugin timeline to DAW
+- Export as MIDI or WAV/AIFF audio files
+- Automatic pattern-to-MIDI conversion for drums
+- Visual drag preview with block information
+
+#### 🔁 Loop Region Sync (`LoopRegionSync.h/cpp`)
+
+Synchronize arrangements with DAW loop regions:
+- **Stretch Mode**: Scale blocks to fit region duration
+- **Trim Mode**: Cut blocks to fit within region
+- **Loop Mode**: Repeat blocks to fill region
+- **Quantize Mode**: Snap to beat grid
+- **Smart Mode**: Automatically choose best fit
+
+#### 🥁 Instrument Sequencer (`InstrumentSequencer.h/cpp`)
+
+Pattern editor with preset generators:
+- Step sequencer with 64 steps, variable steps per beat
+- Hi-hat roll generator with trap-style patterns
+- 808 bass glide generator with pitch slides
+- Velocity, probability, retrigger per step
+- Pattern operations: shift, reverse, double, humanize
+
+#### 📦 Community Preset Packs (`PresetPackManager.h/cpp`)
+
+Import/export preset bundles:
+- Compressed `.maevnpack` format with metadata
+- Include FX presets and sequencer patterns
+- Pack versioning and validation
+- Author attribution and licensing
+- Browser UI for pack management
+
+#### 🚀 GPU Acceleration (`GPUAcceleration.h/cpp`)
+
+Infrastructure for GPU-accelerated inference:
+- **CUDA** support for NVIDIA GPUs
+- **DirectML** support for Windows 10+
+- **CoreML** support for macOS
+- Automatic device detection
+- Fallback to CPU if GPU unavailable
+- Performance benchmarking
+
+#### 🏪 Model Marketplace (`ModelMarketplace.h/cpp`)
+
+Download community ONNX models:
+- Browse and search model catalog
+- Category and tag filtering
+- Download with progress tracking
+- Model ratings and verification
+- Automatic model installation
+- Local model management
 
 ---
 
