@@ -276,7 +276,8 @@ def generate_vocal_formant(start_sample, text, duration_beats, pitch_midi):
 def apply_reverb(audio, decay=0.3, room_size=0.4):
     """Apply simple reverb effect."""
     num_samples = len(audio)
-    reverb = np.zeros(num_samples + int(SAMPLE_RATE * 1.5))
+    reverb_length = num_samples + int(SAMPLE_RATE * 1.5)
+    reverb = np.zeros(reverb_length)
     reverb[:num_samples] = audio
     
     # Multiple delay taps
@@ -284,7 +285,11 @@ def apply_reverb(audio, decay=0.3, room_size=0.4):
     gains = [0.6, 0.5, 0.4, 0.3, 0.2]
     
     for delay, gain in zip(delays, gains):
-        reverb[delay:delay+num_samples] += audio * gain * decay * room_size
+        # Ensure we don't exceed buffer bounds
+        end_idx = min(delay + num_samples, reverb_length)
+        samples_to_add = end_idx - delay
+        if samples_to_add > 0:
+            reverb[delay:end_idx] += audio[:samples_to_add] * gain * decay * room_size
     
     return reverb[:num_samples]
 
@@ -313,15 +318,29 @@ def mix_to_stereo(audio_events, pan_positions):
     stereo = np.zeros((2, NUM_SAMPLES))
     
     for (start, wave), pan in zip(audio_events, pan_positions):
-        end = min(start + len(wave), NUM_SAMPLES)
+        # Handle negative start positions
+        wave_start = 0
+        if start < 0:
+            wave_start = -start
+            start = 0
+        
+        # Skip if start is beyond the buffer
+        if start >= NUM_SAMPLES:
+            continue
+        
+        end = min(start + len(wave) - wave_start, NUM_SAMPLES)
         actual_len = end - start
+        
+        # Skip if nothing to add
+        if actual_len <= 0:
+            continue
         
         # Calculate panning gains
         left_gain = np.sqrt(0.5 * (1 - pan))
         right_gain = np.sqrt(0.5 * (1 + pan))
         
-        stereo[0, start:end] += wave[:actual_len] * left_gain
-        stereo[1, start:end] += wave[:actual_len] * right_gain
+        stereo[0, start:end] += wave[wave_start:wave_start+actual_len] * left_gain
+        stereo[1, start:end] += wave[wave_start:wave_start+actual_len] * right_gain
     
     return stereo
 
