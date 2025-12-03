@@ -117,7 +117,7 @@ class VocalSynthesizer:
             Glottal pulse train
         """
         num_samples = int(duration * self.sample_rate)
-        t = np.linspace(0, duration, num_samples)
+        t = np.arange(num_samples) / self.sample_rate
         
         # Apply vibrato
         vibrato = 1.0 + vibrato_depth * np.sin(2 * np.pi * vibrato_rate * t)
@@ -132,8 +132,9 @@ class VocalSynthesizer:
             amp = 1.0 / (h ** 1.2)  # Spectral rolloff
             source += amp * np.sin(h * phase)
         
-        # Normalize
-        source /= np.max(np.abs(source) + 1e-8)
+        # Normalize - properly handle zero case
+        max_val = np.max(np.abs(source))
+        source /= max_val + 1e-8
         
         return source
     
@@ -349,12 +350,22 @@ def apply_limiter(audio, ceiling=-0.1):
 
 
 def normalize_audio(audio, target_db=-3):
-    """Normalize audio to target dB level."""
+    """Normalize audio to target dB level.
+    
+    Args:
+        audio: Input audio array (not modified)
+        target_db: Target level in dB
+    
+    Returns:
+        New normalized audio array
+    """
     target_linear = 10 ** (target_db / 20)
     max_amplitude = np.max(np.abs(audio))
     if max_amplitude > 0:
-        audio = audio / max_amplitude * target_linear
-    return audio
+        normalized = audio / max_amplitude * target_linear
+    else:
+        normalized = audio.copy()
+    return normalized
 
 
 def save_wav(audio, filepath, sample_rate=SAMPLE_RATE, stereo=True):

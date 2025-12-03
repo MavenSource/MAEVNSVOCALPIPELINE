@@ -158,8 +158,12 @@ def load_pth_model(pth_path, model_type='tts', config=None):
         raise FileNotFoundError(f"Model file not found: {pth_path}")
     
     print(f"Loading .pth model from: {pth_path}")
+    print("WARNING: Only load .pth files from trusted sources. "
+          "Untrusted files may contain malicious code.")
     
     # Load the checkpoint
+    # Note: weights_only=False is required for full model loading but poses security risks
+    # with untrusted files. Only load models from trusted sources.
     checkpoint = torch.load(pth_path, map_location='cpu', weights_only=False)
     
     # Determine model architecture
