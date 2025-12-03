@@ -22,6 +22,7 @@
 
 ## 📖 Table of Contents
 
+- [Hip-Hop x Trap Audio Samples](#-hip-hop-x-trap-audio-samples)
 - [Introduction](#-introduction)
 - [Features](#-features)
   - [Vocals](#-vocals)
@@ -42,6 +43,58 @@
   - [Testing](#testing)
   - [Contribution Principles](#contribution-principles)
   - [Getting Started](#getting-started-for-contributors)
+
+---
+
+## 🎧 Hip-Hop x Trap Audio Samples
+
+> **Transparency & Playback**: Listen to AI-generated audio samples demonstrating MAEVN's Hip-Hop x Trap capabilities.
+
+| Sample | Genre | Duration | BPM | Download |
+|--------|-------|----------|-----|----------|
+| **MAEVN Song Sample** | Hip-Hop x Trap | 60 seconds | 140 | [📥 Download from GitHub Actions](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/actions/workflows/generate-audio-samples.yml) |
+
+### 🔊 What's in the Sample?
+
+The generated audio sample showcases the full MAEVN production pipeline:
+
+| Element | Description |
+|---------|-------------|
+| 🎤 **Vocals** | Formant-synthesized vocals with dynamic vowel transitions |
+| 🔊 **808 Bass** | Deep sub-bass with trap-style glides |
+| 🥁 **Hi-Hats** | Fast 16th-note trap rolls with velocity variation |
+| 👏 **Snare/Clap** | Layered body + noise snare hits on beats 2 & 4 |
+| 🎹 **Piano** | C minor chord progression (Cm → Bb → Ab → G) |
+| 🎛️ **Synth Pads** | FM synthesis pads with LFO modulation |
+
+### 🎵 Effects Applied
+
+- **Reverb**: Room simulation for depth and space
+- **Compression**: Dynamics control (-15dB threshold, 3:1 ratio)
+- **Limiter**: Peak control at -0.1dB ceiling
+- **Stereo Panning**: Spatial positioning for each instrument
+
+### 📥 How to Access Audio Artifacts
+
+1. **Via GitHub Actions**: Click the badge below or navigate to [Actions → Generate Hip-Hop x Trap Audio Samples](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/actions/workflows/generate-audio-samples.yml)
+2. **Select a workflow run** from the list
+3. **Download the artifact** named `hiphop-trap-audio-samples` from the Artifacts section
+
+[![Generate Audio Samples](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/actions/workflows/generate-audio-samples.yml/badge.svg)](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/actions/workflows/generate-audio-samples.yml)
+
+### 🛠️ Generate Locally
+
+You can also generate samples locally:
+
+```bash
+# Install dependencies
+pip install numpy scipy
+
+# Generate the Hip-Hop x Trap sample
+python scripts/generate_song_sample.py
+
+# Output: output/maevn_song_sample.wav (60 seconds, 44.1kHz, 16-bit stereo)
+```
 
 ---
 

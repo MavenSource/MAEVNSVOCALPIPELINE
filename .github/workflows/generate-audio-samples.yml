@@ -1,0 +1,44 @@
+name: Generate Hip-Hop x Trap Audio Samples
+
+on:
+  push:
+    branches: [ main, dev ]
+    paths:
+      - 'scripts/generate_song_sample.py'
+      - '.github/workflows/generate-audio-samples.yml'
+  pull_request:
+    branches: [ main, dev ]
+  workflow_dispatch:
+
+jobs:
+  generate-audio:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy scipy
+
+      - name: Generate Hip-Hop x Trap audio sample
+        run: |
+          python scripts/generate_song_sample.py
+          echo "Audio sample generated successfully!"
+
+      - name: Upload audio artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hiphop-trap-audio-samples
+          path: output/*.wav
+          retention-days: 90
+          if-no-files-found: error
