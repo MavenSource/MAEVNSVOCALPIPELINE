@@ -7,6 +7,8 @@ on:
       - 'scripts/generate_song_sample.py'
       - 'scripts/generate_text_to_vocal_samples.py'
       - '.github/workflows/generate-audio-samples.yml'
+      - 'scripts/convert_pth_to_onnx.py'
+      - 'scripts/requirements.txt'
   pull_request:
     branches: [ main, dev ]
   workflow_dispatch:
