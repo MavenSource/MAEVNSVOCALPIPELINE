@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: hiphop-trap-audio-samples
-          path: output/*.wav
+          path: output/**/*.wav
           retention-days: 90
           if-no-files-found: warn
 
