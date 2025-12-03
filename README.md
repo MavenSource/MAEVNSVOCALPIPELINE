@@ -98,6 +98,91 @@ python scripts/generate_song_sample.py
 
 ---
 
+## 🎤 Text-to-Vocal Samples (Functional Transparency)
+
+> **5 Text-to-Vocal samples** demonstrating the MAEVN Vocal Pipeline's text-to-speech synthesis capabilities.
+
+| Sample | Description | Duration | Style |
+|--------|-------------|----------|-------|
+| **sample_01_hello_world** | Basic "Hello World" vocal synthesis demo | 2.0s | Neutral |
+| **sample_02_rise_up** | Emotional "Rise Up" with ascending pitch | 2.5s | Emotional |
+| **sample_03_melodic_hook** | Trap-style melodic hook | 3.0s | Trap |
+| **sample_04_vocal_chop** | Chopped vocal effect for EDM/Hip-Hop | 2.0s | Chop |
+| **sample_05_smooth_vocal** | Smooth R&B style vocal | 3.0s | R&B |
+
+### 🔊 Features Demonstrated
+
+- **Formant Synthesis**: Realistic vowel sounds using formant filtering
+- **Pitch Contours**: Melodic variations across phonemes
+- **Multiple Styles**: Neutral, Emotional, Trap, Chop, R&B vocal styles
+- **Effects Processing**: Reverb, compression, and limiting applied
+
+### 📥 Download Text-to-Vocal Samples
+
+1. **Via GitHub Actions**: Navigate to [Actions → Generate Hip-Hop x Trap Audio Samples](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/actions/workflows/generate-audio-samples.yml)
+2. **Select a workflow run** from the list
+3. **Download the artifact** named `text-to-vocal-samples` from the Artifacts section
+
+### 🛠️ Generate Text-to-Vocal Samples Locally
+
+```bash
+# Install dependencies
+pip install numpy scipy
+
+# Generate 5 text-to-vocal samples
+python scripts/generate_text_to_vocal_samples.py
+
+# Output: output/text_to_vocal_samples/*.wav
+```
+
+---
+
+## 🔧 Embedding Custom .pth Models
+
+> Convert your PyTorch `.pth` vocal models to ONNX format for use with the MAEVN Vocal Pipeline.
+
+### Supported Model Types
+
+| Model Type | Description | Input | Output |
+|------------|-------------|-------|--------|
+| **TTS** | Text-to-Speech models | Text embeddings | Mel-spectrograms |
+| **HiFi-GAN** | Vocoder models | Mel-spectrograms | Audio waveforms |
+| **Vocal Embedding** | Custom vocal synthesis | Feature vectors | Mel-spectrograms |
+
+### 🛠️ Convert .pth to ONNX
+
+```bash
+# Install dependencies
+pip install torch onnx onnxscript
+
+# Convert your custom TTS model
+python scripts/convert_pth_to_onnx.py --input your_model.pth --output Models/vocals/vocals_tts.onnx --model-type tts
+
+# Convert your HiFi-GAN vocoder
+python scripts/convert_pth_to_onnx.py --input hifigan.pth --output Models/vocals/vocals_hifigan.onnx --model-type hifigan
+
+# Create default models (for testing)
+python scripts/convert_pth_to_onnx.py --create-default
+```
+
+### Model Configuration
+
+After conversion, update `Models/config.json` to include your vocal models:
+
+```json
+{
+  "808": "drums/808_ddsp.onnx",
+  "hihat": "drums/hihat_ddsp.onnx",
+  "snare": "drums/snare_ddsp.onnx",
+  "piano": "instruments/piano_ddsp.onnx",
+  "synth": "instruments/synth_fm.onnx",
+  "vocal_tts": "vocals/vocals_tts.onnx",
+  "vocal_hifigan": "vocals/vocals_hifigan.onnx"
+}
+```
+
+---
+
 ## 🎯 Introduction
 
 **MAEVN** (pronounced *"Maven"*) is a revolutionary **AI-powered VST3 plugin** that brings cutting-edge machine learning directly into your Digital Audio Workstation (DAW). Built on the robust **JUCE framework** with **ONNX Runtime** integration, MAEVN provides:

@@ -5,6 +5,7 @@ on:
     branches: [ main, dev ]
     paths:
       - 'scripts/generate_song_sample.py'
+      - 'scripts/generate_text_to_vocal_samples.py'
       - '.github/workflows/generate-audio-samples.yml'
   pull_request:
     branches: [ main, dev ]
@@ -35,10 +36,23 @@ jobs:
           python scripts/generate_song_sample.py
           echo "Audio sample generated successfully!"
 
-      - name: Upload audio artifacts
+      - name: Generate Text-to-Vocal samples
+        run: |
+          python scripts/generate_text_to_vocal_samples.py
+          echo "Text-to-vocal samples generated successfully!"
+
+      - name: Upload Hip-Hop x Trap audio artifacts
         uses: actions/upload-artifact@v4
         with:
           name: hiphop-trap-audio-samples
           path: output/*.wav
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Upload Text-to-Vocal samples
+        uses: actions/upload-artifact@v4
+        with:
+          name: text-to-vocal-samples
+          path: output/text_to_vocal_samples/
           retention-days: 90
           if-no-files-found: error
