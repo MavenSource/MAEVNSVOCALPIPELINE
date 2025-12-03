@@ -66,11 +66,15 @@ class SimpleHiFiGAN(nn.Module):
     Simple HiFi-GAN vocoder architecture for demonstration.
     Replace with your actual HiFi-GAN model architecture.
     """
-    def __init__(self, mel_channels=80, upsample_rates=[8, 8, 2, 2], 
-                 upsample_kernel_sizes=[16, 16, 4, 4], 
+    def __init__(self, mel_channels=80, upsample_rates=None, 
+                 upsample_kernel_sizes=None, 
                  upsample_initial_channel=512):
         super().__init__()
         self.mel_channels = mel_channels
+        if upsample_rates is None:
+            upsample_rates = [8, 8, 2, 2]
+        if upsample_kernel_sizes is None:
+            upsample_kernel_sizes = [16, 16, 4, 4]
         
         # Simplified vocoder with upsampling
         self.conv_pre = nn.Conv1d(mel_channels, upsample_initial_channel, 7, 1, 3)
