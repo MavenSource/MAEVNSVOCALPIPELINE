@@ -409,7 +409,31 @@ chmod +x setup_maevn_repo.sh
 ./setup_maevn_repo.sh
 ```
 
-This creates the `/Models`, `/Presets`, and `/Resources` directories and generates `Models/config.json`.
+This creates the `/Models`, `/Presets`, and `/Resources` directories, the build staging folder, and generates `Models/config.json`.
+
+#### ⚡ Local Build Quickstart (Linux/macOS)
+
+```bash
+# 1) Clone and prepare the repository
+git clone https://github.com/MavenSource/MAEVNSVOCALPIPELINE.git
+cd MAEVNSVOCALPIPELINE
+./setup_maevn_repo.sh
+
+# 2) Install dependencies for ONNX exports
+python3 -m pip install -r scripts/requirements.txt
+
+# 3) Export default instrument ONNX models
+python3 scripts/export_onnx_models.py
+
+# 4) Configure and build the VST3 (update paths for your machine)
+cmake -B Build -S . \
+    -DJUCE_PATH="/path/to/JUCE" \
+    -DONNXRUNTIME_PATH="/path/to/onnxruntime"
+cmake --build Build --config Release
+
+# 5) Install the plugin to your local VST3 directory
+cmake --install Build --config Release
+```
 
 #### 3️⃣ Generate Default ONNX Models
 
