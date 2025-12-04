@@ -44,7 +44,7 @@ Provide **production-ready** ONNX models for the vocal pipeline (no demo placeho
 
 Guidance for full-scale models:
 - Train/export at 44.1kHz or 48kHz to match your session sample rate.
-- Target ONNX opset 11+ with dynamic batch/time dimensions for DAW performance.
+- Target ONNX opset 18+ with dynamic batch/time dimensions for DAW performance.
 - Verify latency and artifact-free output before shipping.
 
 You can bring your own trained models or adapt existing ones:
