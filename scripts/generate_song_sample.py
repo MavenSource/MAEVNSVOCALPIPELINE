@@ -2,7 +2,7 @@
 """
 MAEVN Song Generation Sample Script
 ====================================
-Generates a 60-second music sample demonstrating the MAEVN vocal pipeline
+Generates a 59-second music sample demonstrating the MAEVN vocal pipeline
 with all instruments: vocals, 808 bass, hi-hats, snares, piano, and synth.
 
 This script produces a real, playable audio file with:
@@ -13,7 +13,7 @@ This script produces a real, playable audio file with:
 - Piano chords
 - Synth pads
 
-Output: A 60-second stereo WAV file at 44.1kHz, 16-bit
+Output: A 59-second (00:59) stereo WAV file at 44.1kHz, 16-bit
 """
 
 import numpy as np
@@ -24,7 +24,7 @@ import sys
 
 # Audio Constants
 SAMPLE_RATE = 44100
-DURATION = 60  # seconds
+DURATION = 59  # seconds (00:59 duration as requested)
 BPM = 140
 BEAT_DURATION = 60.0 / BPM
 SAMPLES_PER_BEAT = int(SAMPLE_RATE * BEAT_DURATION)

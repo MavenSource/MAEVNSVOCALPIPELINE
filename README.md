@@ -52,7 +52,7 @@
 
 | Sample | Genre | Duration | BPM | Download |
 |--------|-------|----------|-----|----------|
-| **MAEVN Song Sample** | Hip-Hop x Trap | 60 seconds | 140 | [📥 Download from GitHub Actions](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/actions/workflows/generate-audio-samples.yml) |
+| **MAEVN Song Sample** | Hip-Hop x Trap | 59 seconds | 140 | [📥 Download from GitHub Actions](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/actions/workflows/generate-audio-samples.yml) |
 
 ### 🔊 What's in the Sample?
 
@@ -93,7 +93,7 @@ pip install numpy scipy
 # Generate the Hip-Hop x Trap sample
 python scripts/generate_song_sample.py
 
-# Output: output/maevn_song_sample.wav (60 seconds, 44.1kHz, 16-bit stereo)
+# Output: output/maevn_song_sample.wav (59 seconds, 44.1kHz, 16-bit stereo)
 ```
 
 ---
