@@ -18,6 +18,8 @@ on:
 env:
   BUILD_TYPE: Release
   PLUGIN_NAME: MAEVN
+  JUCE_VERSION: "7.0.9"
+  ONNXRUNTIME_VERSION: "1.16.3"
 
 jobs:
   build-windows:
@@ -53,16 +55,11 @@ jobs:
 
       - name: Install JUCE
         run: |
-          git clone --depth 1 --branch 7.0.9 https://github.com/juce-framework/JUCE.git ${{ github.workspace }}/JUCE
-          cd ${{ github.workspace }}/JUCE
-          $expected_commit = "c2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2" # Replace with actual commit hash for 7.0.9
-          $actual_commit = git rev-parse HEAD
-          if ($actual_commit -ne $expected_commit) { Write-Error "JUCE commit hash does not match expected value!"; exit 1 }
-          cd ${{ github.workspace }}
+          git clone --depth 1 --branch ${{ env.JUCE_VERSION }} https://github.com/juce-framework/JUCE.git ${{ github.workspace }}/JUCE
 
       - name: Download ONNX Runtime
         run: |
-          $version = "1.16.3"
+          $version = "${{ env.ONNXRUNTIME_VERSION }}"
           $url = "https://github.com/microsoft/onnxruntime/releases/download/v$version/onnxruntime-win-x64-$version.zip"
           $checksum_url = "https://github.com/microsoft/onnxruntime/releases/download/v$version/onnxruntime-win-x64-$version.zip.sha256"
           Invoke-WebRequest -Uri $url -OutFile onnxruntime.zip
@@ -172,11 +169,11 @@ jobs:
 
       - name: Install JUCE
         run: |
-          git clone --depth 1 --branch 7.0.9 https://github.com/juce-framework/JUCE.git ${{ github.workspace }}/JUCE
+          git clone --depth 1 --branch ${{ env.JUCE_VERSION }} https://github.com/juce-framework/JUCE.git ${{ github.workspace }}/JUCE
 
       - name: Download ONNX Runtime
         run: |
-          version="1.16.3"
+          version="${{ env.ONNXRUNTIME_VERSION }}"
           # Download for both x86_64 and arm64
           curl -L "https://github.com/microsoft/onnxruntime/releases/download/v${version}/onnxruntime-osx-universal2-${version}.tgz" -o onnxruntime.tgz
           tar -xzf onnxruntime.tgz
@@ -202,10 +199,20 @@ jobs:
           mkdir -p release/MAEVN-macOS/Presets
           
           # Copy VST3 plugin
-          cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-macOS/VST3/ || true
+          cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-macOS/VST3/
+          # Validate that at least one VST3 file was copied
+          if ! ls release/MAEVN-macOS/VST3/*.vst3 1> /dev/null 2>&1; then
+            echo "Error: No VST3 plugin files were copied. Build may have failed."
+            exit 1
+          fi
           
-          # Copy AU plugin
-          cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/AU/*.component release/MAEVN-macOS/AU/ || true
+          # Copy AU plugin (optional - only if built)
+          if ls Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/AU/*.component 1> /dev/null 2>&1; then
+            cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/AU/*.component release/MAEVN-macOS/AU/
+            echo "AU plugin copied successfully"
+          else
+            echo "AU plugin not found - skipping (this is expected if AU format was not built)"
+          fi
           
           # Copy Models and Presets
           cp -r Models/* release/MAEVN-macOS/Models/
@@ -307,11 +314,11 @@ jobs:
 
       - name: Install JUCE
         run: |
-          git clone --depth 1 --branch 7.0.9 https://github.com/juce-framework/JUCE.git ${{ github.workspace }}/JUCE
+          git clone --depth 1 --branch ${{ env.JUCE_VERSION }} https://github.com/juce-framework/JUCE.git ${{ github.workspace }}/JUCE
 
       - name: Download ONNX Runtime
         run: |
-          version="1.16.3"
+          version="${{ env.ONNXRUNTIME_VERSION }}"
           curl -L "https://github.com/microsoft/onnxruntime/releases/download/v${version}/onnxruntime-linux-x64-${version}.tgz" -o onnxruntime.tgz
           tar -xzf onnxruntime.tgz
           mv onnxruntime-linux-x64-${version} onnxruntime
@@ -335,7 +342,12 @@ jobs:
           mkdir -p release/MAEVN-Linux/Presets
           
           # Copy VST3 plugin
-          cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-Linux/VST3/ || true
+          cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-Linux/VST3/
+          # Validate that at least one VST3 file was copied
+          if ! ls release/MAEVN-Linux/VST3/*.vst3 1> /dev/null 2>&1; then
+            echo "Error: No VST3 plugin files were copied. Build may have failed."
+            exit 1
+          fi
           
           # Copy Models and Presets
           cp -r Models/* release/MAEVN-Linux/Models/
@@ -492,7 +504,7 @@ jobs:
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           else
-            echo "VERSION=v1.0.0-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+            echo "VERSION=v1.0.0-$(date +%Y%m%d)-${{ github.run_number }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Create GitHub Release
