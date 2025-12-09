@@ -20,6 +20,11 @@ from scipy.io import wavfile
 import os
 import sys
 import json
+import io
+
+# Configure UTF-8 encoding for stdout to prevent UnicodeEncodeError
+if not sys.stdout.encoding or sys.stdout.encoding.lower() not in ('utf-8', 'utf8'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Audio Constants
 SAMPLE_RATE = 44100
@@ -535,7 +540,7 @@ def generate_manifest(samples_info, output_dir):
     }
     
     manifest_path = os.path.join(output_dir, 'samples_manifest.json')
-    with open(manifest_path, 'w') as f:
+    with open(manifest_path, 'w', encoding='utf-8') as f:
         json.dump(manifest, f, indent=2)
     
     print(f"\nManifest saved: {manifest_path}")
@@ -597,7 +602,7 @@ def main():
     for filepath in generated_files:
         size = os.path.getsize(filepath)
         total_size += size
-        print(f"  ✓ {os.path.basename(filepath)} ({size / 1024:.1f} KB)")
+        print(f"  [OK] {os.path.basename(filepath)} ({size / 1024:.1f} KB)")
     
     print(f"\nTotal size: {total_size / 1024:.1f} KB")
     print("-" * 70)

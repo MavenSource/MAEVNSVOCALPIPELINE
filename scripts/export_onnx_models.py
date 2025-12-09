@@ -9,6 +9,12 @@ import torch.nn as nn
 import torch.onnx
 import os
 import numpy as np
+import sys
+import io
+
+# Configure UTF-8 encoding for stdout to prevent UnicodeEncodeError
+if not sys.stdout.encoding or sys.stdout.encoding.lower() not in ('utf-8', 'utf8'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 class SimpleDDSP808(nn.Module):
     """Simple DDSP-inspired 808 bass generator"""
@@ -103,7 +109,7 @@ def export_model(model, dummy_input, output_path, model_name):
         }
     )
     
-    print(f"✓ {model_name} exported successfully")
+    print(f"[OK] {model_name} exported successfully")
 
 def main():
     """Main export function"""
