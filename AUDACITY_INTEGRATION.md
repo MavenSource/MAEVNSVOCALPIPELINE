@@ -64,7 +64,7 @@ If you don't have Audacity installed:
 ### Step 1: Build or Obtain MAEVN Plugin
 
 #### Option A: Download Pre-Built Plugin (if available)
-1. Visit the [MAEVN Releases](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/releases) page
+1. Visit the [MAEVN releases](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/releases) page
 2. Download the latest release for your platform
 3. Extract the archive to a temporary location
 
