@@ -1,0 +1,525 @@
+name: Build and Release MAEVN VST3 Plugin
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Create a GitHub release'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  BUILD_TYPE: Release
+  PLUGIN_NAME: MAEVN
+  JUCE_VERSION: "7.0.9"
+  ONNXRUNTIME_VERSION: "1.16.3"
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy scipy torch onnx onnxruntime onnxscript
+
+      - name: Setup repository structure
+        shell: bash
+        run: |
+          bash setup_maevn_repo.sh
+
+      - name: Generate ONNX models
+        run: |
+          python scripts/export_onnx_models.py
+          echo "ONNX models generated successfully"
+
+      - name: Install JUCE
+        run: |
+          git clone --depth 1 --branch ${{ env.JUCE_VERSION }} https://github.com/juce-framework/JUCE.git ${{ github.workspace }}/JUCE
+
+      - name: Download ONNX Runtime
+        run: |
+          $version = "${{ env.ONNXRUNTIME_VERSION }}"
+          $url = "https://github.com/microsoft/onnxruntime/releases/download/v$version/onnxruntime-win-x64-$version.zip"
+          Invoke-WebRequest -Uri $url -OutFile onnxruntime.zip
+          Expand-Archive -Path onnxruntime.zip -DestinationPath ${{ github.workspace }}
+          Rename-Item -Path "${{ github.workspace }}/onnxruntime-win-x64-$version" -NewName "onnxruntime"
+
+      - name: Configure CMake
+        run: |
+          cmake -B Build -S . `
+            -DJUCE_PATH="${{ github.workspace }}/JUCE" `
+            -DONNXRUNTIME_PATH="${{ github.workspace }}/onnxruntime" `
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+
+      - name: Build VST3 Plugin
+        run: |
+          cmake --build Build --config ${{ env.BUILD_TYPE }} --parallel
+
+      - name: Package Windows VST3
+        shell: bash
+        run: |
+          mkdir -p release/MAEVN-Windows
+          mkdir -p release/MAEVN-Windows/VST3
+          mkdir -p release/MAEVN-Windows/Models
+          mkdir -p release/MAEVN-Windows/Presets
+          
+          # Copy VST3 plugin
+          cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-Windows/VST3/
+          # Validate that at least one VST3 file was copied
+          if ! ls release/MAEVN-Windows/VST3/*.vst3 1> /dev/null 2>&1; then
+            echo "Error: No VST3 files found in expected build output location. Check build output path or build logs."
+            exit 1
+          fi
+          
+          # Copy Models and Presets
+          cp -r Models/* release/MAEVN-Windows/Models/ || true
+          if [ ! -d "release/MAEVN-Windows/Models" ] || [ -z "$(ls -A release/MAEVN-Windows/Models 2>/dev/null)" ]; then
+            echo "Warning: No model files were copied. 'Models/' directory is missing or empty."
+          fi
+          cp -r Presets/* release/MAEVN-Windows/Presets/ || true
+          if [ ! -d "release/MAEVN-Windows/Presets" ] || [ -z "$(ls -A release/MAEVN-Windows/Presets 2>/dev/null)" ]; then
+            echo "Warning: No preset files were copied. 'Presets/' directory is missing or empty."
+          fi
+          
+          # Copy documentation
+          cp README.md release/MAEVN-Windows/
+          cp QUICKSTART.md release/MAEVN-Windows/
+          
+          # Create installation instructions
+          cat > release/MAEVN-Windows/INSTALL.txt << 'EOF'
+          MAEVN VST3 Plugin - Windows Installation
+          ==========================================
+
+          1. Copy the .vst3 file from VST3/ to your VST3 plugin folder:
+             C:\Program Files\Common Files\VST3\
+
+          2. Copy the Models/ and Presets/ folders to the same location as the VST3 file,
+             or place them in your user directory:
+             %APPDATA%\MAEVN\
+
+          3. Restart your DAW (Reaper, Ableton, FL Studio, etc.)
+
+          4. Load MAEVN on an audio track
+
+          5. See README.md for usage instructions
+
+          For support: https://github.com/MavenSource/MAEVNSVOCALPIPELINE/issues
+          EOF
+
+      - name: Create Windows ZIP
+        run: |
+          Compress-Archive -Path release/MAEVN-Windows/* -DestinationPath MAEVN-Windows-x64.zip
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MAEVN-Windows-x64
+          path: MAEVN-Windows-x64.zip
+          retention-days: 90
+
+  build-macos:
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy scipy torch onnx onnxruntime onnxscript
+
+      - name: Setup repository structure
+        run: |
+          bash setup_maevn_repo.sh
+
+      - name: Generate ONNX models
+        run: |
+          python scripts/export_onnx_models.py
+          echo "ONNX models generated successfully"
+
+      - name: Install JUCE
+        run: |
+          git clone --depth 1 --branch ${{ env.JUCE_VERSION }} https://github.com/juce-framework/JUCE.git ${{ github.workspace }}/JUCE
+
+      - name: Download ONNX Runtime
+        run: |
+          version="${{ env.ONNXRUNTIME_VERSION }}"
+          # Download for both x86_64 and arm64
+          curl -L "https://github.com/microsoft/onnxruntime/releases/download/v${version}/onnxruntime-osx-universal2-${version}.tgz" -o onnxruntime.tgz
+          tar -xzf onnxruntime.tgz
+          mv onnxruntime-osx-universal2-${version} onnxruntime
+
+      - name: Configure CMake
+        run: |
+          cmake -B Build -S . \
+            -DJUCE_PATH="${{ github.workspace }}/JUCE" \
+            -DONNXRUNTIME_PATH="${{ github.workspace }}/onnxruntime" \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+
+      - name: Build VST3 Plugin
+        run: |
+          cmake --build Build --config ${{ env.BUILD_TYPE }} --parallel
+
+      - name: Package macOS VST3
+        run: |
+          mkdir -p release/MAEVN-macOS
+          mkdir -p release/MAEVN-macOS/VST3
+          mkdir -p release/MAEVN-macOS/AU
+          mkdir -p release/MAEVN-macOS/Models
+          mkdir -p release/MAEVN-macOS/Presets
+          
+          # Copy VST3 plugin
+          cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-macOS/VST3/
+          # Validate that at least one VST3 file was copied
+          if ! ls release/MAEVN-macOS/VST3/*.vst3 1> /dev/null 2>&1; then
+            echo "Error: No VST3 files found in expected build output location. Check build output path or build logs."
+            exit 1
+          fi
+          
+          # Copy AU plugin (optional - only if built)
+          if ls Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/AU/*.component 1> /dev/null 2>&1; then
+            cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/AU/*.component release/MAEVN-macOS/AU/
+            echo "AU plugin copied successfully"
+          else
+            echo "AU plugin not found - skipping (this is expected if AU format was not built)"
+          fi
+          
+          # Copy Models and Presets
+          cp -r Models/* release/MAEVN-macOS/Models/
+          cp -r Presets/* release/MAEVN-macOS/Presets/
+          
+          # Copy documentation
+          cp README.md release/MAEVN-macOS/
+          cp QUICKSTART.md release/MAEVN-macOS/
+          
+          # Create installation instructions
+          cat > release/MAEVN-macOS/INSTALL.txt << 'EOF'
+          MAEVN VST3/AU Plugin - macOS Installation
+          ==========================================
+
+          VST3 Installation:
+          1. Copy the .vst3 bundle from VST3/ to:
+             /Library/Audio/Plug-Ins/VST3/
+             or
+             ~/Library/Audio/Plug-Ins/VST3/
+
+          AU Installation:
+          1. Copy the .component bundle from AU/ to:
+             /Library/Audio/Plug-Ins/Components/
+             or
+             ~/Library/Audio/Plug-Ins/Components/
+
+          2. Copy the Models/ and Presets/ folders to:
+             ~/Library/Application Support/MAEVN/
+
+          3. Restart your DAW (Logic Pro, Ableton, Reaper, etc.)
+
+          4. Load MAEVN on an audio track
+
+          5. See README.md for usage instructions
+
+          For support: https://github.com/MavenSource/MAEVNSVOCALPIPELINE/issues
+          EOF
+
+      - name: Create macOS ZIP
+        run: |
+          cd release
+          zip -r ../MAEVN-macOS-Universal.zip MAEVN-macOS
+
+      - name: Upload macOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MAEVN-macOS-Universal
+          path: MAEVN-macOS-Universal.zip
+          retention-days: 90
+
+  build-linux:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libasound2-dev \
+            libjack-jackd2-dev \
+            libcurl4-openssl-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxcomposite-dev \
+            libxcursor-dev \
+            libxext-dev \
+            libxinerama-dev \
+            libxrandr-dev \
+            libxrender-dev \
+            libwebkit2gtk-4.0-dev \
+            libglu1-mesa-dev \
+            mesa-common-dev
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy scipy torch onnx onnxruntime onnxscript
+
+      - name: Setup repository structure
+        run: |
+          bash setup_maevn_repo.sh
+
+      - name: Generate ONNX models
+        run: |
+          python scripts/export_onnx_models.py
+          echo "ONNX models generated successfully"
+
+      - name: Install JUCE
+        run: |
+          git clone --depth 1 --branch ${{ env.JUCE_VERSION }} https://github.com/juce-framework/JUCE.git ${{ github.workspace }}/JUCE
+
+      - name: Download ONNX Runtime
+        run: |
+          version="${{ env.ONNXRUNTIME_VERSION }}"
+          curl -L "https://github.com/microsoft/onnxruntime/releases/download/v${version}/onnxruntime-linux-x64-${version}.tgz" -o onnxruntime.tgz
+          tar -xzf onnxruntime.tgz
+          mv onnxruntime-linux-x64-${version} onnxruntime
+
+      - name: Configure CMake
+        run: |
+          cmake -B Build -S . \
+            -DJUCE_PATH="${{ github.workspace }}/JUCE" \
+            -DONNXRUNTIME_PATH="${{ github.workspace }}/onnxruntime" \
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+
+      - name: Build VST3 Plugin
+        run: |
+          cmake --build Build --config ${{ env.BUILD_TYPE }} --parallel
+
+      - name: Package Linux VST3
+        run: |
+          mkdir -p release/MAEVN-Linux
+          mkdir -p release/MAEVN-Linux/VST3
+          mkdir -p release/MAEVN-Linux/Models
+          mkdir -p release/MAEVN-Linux/Presets
+          
+          # Copy VST3 plugin
+          cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-Linux/VST3/
+          # Validate that at least one VST3 file was copied
+          if ! ls release/MAEVN-Linux/VST3/*.vst3 1> /dev/null 2>&1; then
+            echo "Error: No VST3 files found in expected build output location. Check build output path or build logs."
+            exit 1
+          fi
+          
+          # Copy Models and Presets
+          cp -r Models/* release/MAEVN-Linux/Models/
+          cp -r Presets/* release/MAEVN-Linux/Presets/
+          
+          # Copy documentation
+          cp README.md release/MAEVN-Linux/
+          cp QUICKSTART.md release/MAEVN-Linux/
+          
+          # Create installation instructions
+          cat > release/MAEVN-Linux/INSTALL.txt << 'EOF'
+          MAEVN VST3 Plugin - Linux Installation
+          =======================================
+
+          1. Copy the .vst3 bundle from VST3/ to:
+             ~/.vst3/
+             or
+             /usr/lib/vst3/
+
+          2. Copy the Models/ and Presets/ folders to:
+             ~/.config/MAEVN/
+
+          3. Restart your DAW (Reaper, Ardour, Bitwig, etc.)
+
+          4. Load MAEVN on an audio track
+
+          5. See README.md for usage instructions
+
+          Note: Make sure you have the required system libraries installed:
+            - libasound2
+            - libjack
+            - libfreetype6
+            - libx11
+
+          For support: https://github.com/MavenSource/MAEVNSVOCALPIPELINE/issues
+          EOF
+
+      - name: Create Linux TAR.GZ
+        run: |
+          cd release
+          tar -czf ../MAEVN-Linux-x64.tar.gz MAEVN-Linux
+
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MAEVN-Linux-x64
+          path: MAEVN-Linux-x64.tar.gz
+          retention-days: 90
+
+  create-release:
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.create_release == 'true'
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4.1.3
+        with:
+          path: artifacts
+
+      - name: Display structure of downloaded files
+        run: ls -R artifacts
+
+      - name: Create Release Notes
+        run: |
+          cat > RELEASE_NOTES.md << 'EOF'
+          # MAEVN VST3 Plugin Release
+
+          ## 🎚️ Dynamic AI-Powered Vocal + Instrument Generator
+
+          **MAEVN** is an all-in-one AI-powered VST3 plugin built with JUCE + ONNX Runtime, designed for producers, sound designers, and experimental artists.
+
+          ### ✨ Features
+
+          - 🎤 **AI Vocal Synthesis** - Text-to-Speech engine with emotion parsing
+          - 🥁 **Trap-Inspired Instruments** - AI-generated 808s, hi-hats, snares, piano, and synth pads
+          - 🎛️ **Hybrid FX Processing** - Combine traditional DSP with AI-powered effects
+          - 🎼 **Stage-Script Arrangement** - Parse lyrical scripts into timeline blocks
+          - ↩️ **Complete Undo/Redo** - Full action history with jump-to-any-state
+
+          ### 📦 What's Included
+
+          Each platform package contains:
+          - ✅ **VST3 Plugin** - Ready to use in your DAW
+          - ✅ **ONNX Models** - Pre-generated instrument models (808, hi-hat, snare, piano, synth)
+          - ✅ **FX Presets** - Professional effect chain presets
+          - ✅ **Documentation** - README and Quick Start guides
+          - ✅ **Installation Instructions** - Step-by-step setup guide
+
+          ### 🚀 Installation
+
+          1. Download the package for your platform
+          2. Extract the archive
+          3. Follow the INSTALL.txt instructions included in the package
+          4. Restart your DAW
+          5. Load MAEVN and start creating!
+
+          ### 📝 System Requirements
+
+          - **Windows**: Windows 10/11 (64-bit)
+          - **macOS**: macOS 10.13+ (Universal Binary - Intel & Apple Silicon)
+          - **Linux**: Ubuntu 20.04+ or equivalent (64-bit)
+
+          ### 🎤 Vocal Models
+
+          **Note**: This release includes instrument models only. To use the AI vocal synthesis features, you need to provide your own ONNX vocal models:
+          - `vocals_tts.onnx` - Text-to-Speech model
+          - `vocals_hifigan.onnx` - HiFi-GAN vocoder
+
+          See the [README](https://github.com/MavenSource/MAEVNSVOCALPIPELINE#-embedding-custom-pth-models) for conversion instructions.
+
+          ### 🛠️ Supported DAWs
+
+          - ✅ Reaper
+          - ✅ Ableton Live
+          - ✅ FL Studio
+          - ✅ Logic Pro (macOS)
+          - ✅ Studio One
+          - ✅ Bitwig Studio
+          - ✅ Ardour
+          - ✅ And any VST3-compatible DAW
+
+          ### 🐛 Known Issues
+
+          - ONNX Runtime GPU acceleration requires additional setup
+          - Some DAWs may require rescanning plugins after installation
+
+          ### 📚 Documentation
+
+          - [README](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/blob/main/README.md)
+          - [Quick Start Guide](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/blob/main/QUICKSTART.md)
+          - [Architecture Guide](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/blob/main/ARCHITECTURE.md)
+          - [Developer Guide](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/blob/main/DEVELOPER_GUIDE.md)
+
+          ### 💬 Support
+
+          - 🐛 [Report Issues](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/issues)
+          - 💡 [Feature Requests](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/issues)
+          - 📖 [Documentation](https://github.com/MavenSource/MAEVNSVOCALPIPELINE)
+
+          ---
+
+          Made with ❤️ by the MAEVN Team
+          EOF
+
+      - name: Get version from tag or generate
+        id: get_version
+        run: |
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=dev-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          name: MAEVN ${{ steps.get_version.outputs.VERSION }}
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/MAEVN-Windows-x64/MAEVN-Windows-x64.zip
+            artifacts/MAEVN-macOS-Universal/MAEVN-macOS-Universal.zip
+            artifacts/MAEVN-Linux-x64/MAEVN-Linux-x64.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

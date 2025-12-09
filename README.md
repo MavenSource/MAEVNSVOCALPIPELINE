@@ -4,6 +4,8 @@
 
 ### **Dynamic AI-Powered Vocal + Instrument Generator (VST3)**
 
+[![Latest Release](https://img.shields.io/github/v/release/MavenSource/MAEVNSVOCALPIPELINE?style=flat-square&logo=github&label=Download%20Latest)](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/releases/latest)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/MavenSource/MAEVNSVOCALPIPELINE/build-and-release.yml?style=flat-square&logo=github&label=Build)](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/actions/workflows/build-and-release.yml)
 [![JUCE](https://img.shields.io/badge/JUCE-7.0%2B-orange?style=flat-square&logo=juce)](https://juce.com/)
 [![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-1.16%2B-blue?style=flat-square&logo=onnx)](https://onnxruntime.ai/)
 [![CMake](https://img.shields.io/badge/CMake-3.20%2B-red?style=flat-square&logo=cmake)](https://cmake.org/)
@@ -20,8 +22,60 @@
 
 ---
 
+## ⬇️ Download Ready-to-Use Plugin
+
+**🎉 Pre-built VST3 plugin binaries are available for instant download!**
+
+### Quick Download
+
+Visit the [**MAEVN Releases**](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/releases) page to download the latest version:
+
+| Platform | Download | Format |
+|----------|----------|--------|
+| 🪟 **Windows** | [MAEVN-Windows-x64.zip](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/releases/latest) | VST3 |
+| 🍎 **macOS** | [MAEVN-macOS-Universal.zip](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/releases/latest) | VST3 + AU |
+| 🐧 **Linux** | [MAEVN-Linux-x64.tar.gz](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/releases/latest) | VST3 |
+
+### What's Included?
+
+Each download package contains:
+- ✅ **Ready-to-use VST3 plugin** (+ AU for macOS)
+- ✅ **Pre-generated ONNX models** for instruments (808, Hi-Hats, Snare, Piano, Synth)
+- ✅ **Professional FX presets** (RadioVocals, Dirty808, CinematicVocals, etc.)
+- ✅ **Complete documentation** (README, Quick Start Guide)
+- ✅ **Installation instructions** specific to your platform
+
+### 🚀 Quick Install
+
+1. **Download** the package for your platform from the [releases page](https://github.com/MavenSource/MAEVNSVOCALPIPELINE/releases)
+2. **Extract** the archive
+3. **Follow** the `INSTALL.txt` instructions included in the package
+4. **Restart** your DAW
+5. **Load** MAEVN and start creating!
+
+📖 **For detailed installation instructions**, see the [**Download and Install Guide**](DOWNLOAD_AND_INSTALL.md)
+
+### 📝 System Requirements
+
+| Platform | Minimum Requirements |
+|----------|---------------------|
+| **Windows** | Windows 10/11 (64-bit), VST3-compatible DAW |
+| **macOS** | macOS 10.13+ (Intel & Apple Silicon supported), VST3/AU-compatible DAW |
+| **Linux** | Ubuntu 20.04+ or equivalent (64-bit), VST3-compatible DAW |
+
+### 🎤 Adding Vocal Models (Optional)
+
+The downloaded plugin includes all instrument models, but **vocal synthesis requires additional ONNX models**:
+- `vocals_tts.onnx` - Text-to-Speech model
+- `vocals_hifigan.onnx` - HiFi-GAN vocoder
+
+See the [Embedding Custom .pth Models](#-embedding-custom-pth-models) section below for conversion instructions.
+
+---
+
 ## 📖 Table of Contents
 
+- [⬇️ Download Ready-to-Use Plugin](#️-download-ready-to-use-plugin)
 - [Hip-Hop x Trap Audio Samples](#-hip-hop-x-trap-audio-samples)
 - [Introduction](#-introduction)
 - [Features](#-features)
