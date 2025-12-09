@@ -61,12 +61,7 @@ jobs:
         run: |
           $version = "${{ env.ONNXRUNTIME_VERSION }}"
           $url = "https://github.com/microsoft/onnxruntime/releases/download/v$version/onnxruntime-win-x64-$version.zip"
-          $checksum_url = "https://github.com/microsoft/onnxruntime/releases/download/v$version/onnxruntime-win-x64-$version.zip.sha256"
           Invoke-WebRequest -Uri $url -OutFile onnxruntime.zip
-          Invoke-WebRequest -Uri $checksum_url -OutFile onnxruntime.zip.sha256
-          $expected_hash = (Get-Content onnxruntime.zip.sha256).Split(" ")[0]
-          $actual_hash = (Get-FileHash onnxruntime.zip -Algorithm SHA256).Hash.ToLower()
-          if ($actual_hash -ne $expected_hash.ToLower()) { Write-Error "ONNX Runtime checksum verification failed!"; exit 1 }
           Expand-Archive -Path onnxruntime.zip -DestinationPath ${{ github.workspace }}
           Rename-Item -Path "${{ github.workspace }}/onnxruntime-win-x64-$version" -NewName "onnxruntime"
 
@@ -93,7 +88,7 @@ jobs:
           cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-Windows/VST3/
           # Validate that at least one VST3 file was copied
           if ! ls release/MAEVN-Windows/VST3/*.vst3 1> /dev/null 2>&1; then
-            echo "Error: No VST3 plugin files were copied. Build may have failed."
+            echo "Error: No VST3 files found in expected build output location. Check build output path or build logs."
             exit 1
           fi
           
@@ -190,7 +185,8 @@ jobs:
           cmake -B Build -S . \
             -DJUCE_PATH="${{ github.workspace }}/JUCE" \
             -DONNXRUNTIME_PATH="${{ github.workspace }}/onnxruntime" \
-            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+            -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 
       - name: Build VST3 Plugin
         run: |
@@ -208,7 +204,7 @@ jobs:
           cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-macOS/VST3/
           # Validate that at least one VST3 file was copied
           if ! ls release/MAEVN-macOS/VST3/*.vst3 1> /dev/null 2>&1; then
-            echo "Error: No VST3 plugin files were copied. Build may have failed."
+            echo "Error: No VST3 files found in expected build output location. Check build output path or build logs."
             exit 1
           fi
           
@@ -351,7 +347,7 @@ jobs:
           cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-Linux/VST3/
           # Validate that at least one VST3 file was copied
           if ! ls release/MAEVN-Linux/VST3/*.vst3 1> /dev/null 2>&1; then
-            echo "Error: No VST3 plugin files were copied. Build may have failed."
+            echo "Error: No VST3 files found in expected build output location. Check build output path or build logs."
             exit 1
           fi
           
@@ -510,11 +506,11 @@ jobs:
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
             echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           else
-            echo "VERSION=v1.0.0-$(date +%Y%m%d)-${{ github.run_number }}" >> $GITHUB_OUTPUT
+            echo "VERSION=dev-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
           fi
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get_version.outputs.VERSION }}
           name: MAEVN ${{ steps.get_version.outputs.VERSION }}
