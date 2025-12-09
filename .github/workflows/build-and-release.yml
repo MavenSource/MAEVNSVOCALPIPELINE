@@ -83,7 +83,12 @@ jobs:
           mkdir -p release/MAEVN-Windows/Presets
           
           # Copy VST3 plugin
-          cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-Windows/VST3/ || true
+          cp -r Build/MAEVN_artefacts/${{ env.BUILD_TYPE }}/VST3/*.vst3 release/MAEVN-Windows/VST3/
+          # Validate that at least one VST3 file was copied
+          if ! ls release/MAEVN-Windows/VST3/*.vst3 1> /dev/null 2>&1; then
+            echo "Error: No VST3 plugin files were copied. Build may have failed."
+            exit 1
+          fi
           
           # Copy Models and Presets
           cp -r Models/* release/MAEVN-Windows/Models/
