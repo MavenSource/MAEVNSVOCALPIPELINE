@@ -283,7 +283,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends software-properties-common apt-transport-https ca-certificates curl
           sudo add-apt-repository -y universe || true
           sudo apt-get update -y
-          # Install required packages (include libwebkit2gtk)
+          # Install required packages (include libwebkit2gtk-4.0-dev)
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             libasound2-dev \
             libjack-jackd2-dev \
