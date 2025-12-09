@@ -5,6 +5,7 @@
 ### Prerequisites
 - Windows 10/11, macOS 10.15+, or Linux
 - DAW that supports VST3 (Reaper, Ableton, FL Studio, etc.)
+  - **For Audacity users:** See [AUDACITY_INTEGRATION.md](AUDACITY_INTEGRATION.md) for specific instructions
 - 4GB RAM minimum
 - 500MB disk space
 

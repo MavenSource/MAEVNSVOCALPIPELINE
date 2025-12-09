@@ -35,6 +35,7 @@
   - [Requirements](#requirements)
   - [Build Steps](#build-steps)
 - [Workflow in DAW](#-workflow-in-daw)
+- [Audacity Integration](#-audacity-integration)
 - [Roadmap](#-roadmap)
 - [Contributor's Guide](#-contributors-guide)
   - [Coding Standards](#coding-standards)
@@ -530,6 +531,40 @@ Here's the typical workflow for using MAEVN in your production:
 
 ---
 
+## 🎚️ Audacity Integration
+
+MAEVN can be used in **Audacity 3.0+** as a VST3 effects processor. While Audacity doesn't support VST instruments (so you can't generate AI vocals or instruments), you can use MAEVN's powerful FX processing chain on existing audio tracks.
+
+### Supported in Audacity ✅
+- **FX Processing Chain** — Compressor, EQ, Reverb, Limiter
+- **AI-Powered Effects** — AI Autotune, AI Mastering
+- **Hybrid DSP + AI FX** — Combined processing
+- **Preset System** — Load and apply FX presets
+
+### Not Supported in Audacity ❌
+- **AI Vocal Synthesis** — Text-to-speech generation
+- **Instrument Generation** — 808s, hi-hats, piano, synth
+- **Stage Script Parsing** — Timeline arrangement
+- **MIDI Input** — Instrument triggering
+
+### Quick Setup
+1. Build or download MAEVN.vst3
+2. Copy to your system VST3 folder:
+   - Windows: `C:\Program Files\Common Files\VST3\`
+   - macOS: `/Library/Audio/Plug-Ins/VST3/`
+   - Linux: `~/.vst3/`
+3. Open Audacity → `Edit` → `Preferences` → `Effects` → `Plugin Manager`
+4. Click `Rescan` to detect MAEVN
+5. Enable MAEVN in the plugin list
+6. Use from `Effect` menu → `MAEVN`
+
+### 📖 Full Audacity Integration Guide
+For complete step-by-step instructions, troubleshooting, and usage examples, see:
+
+**[AUDACITY_INTEGRATION.md](AUDACITY_INTEGRATION.md)** — Comprehensive Audacity integration documentation
+
+---
+
 ## 🚧 Roadmap
 
 | Feature | Status | Description |
@@ -776,7 +811,7 @@ test: add unit tests for preset loading
 
 ---
 
-📖 [Quick Start](QUICKSTART.md) · 🏗️ [Architecture](ARCHITECTURE.md) · 👨‍💻 [Developer Guide](DEVELOPER_GUIDE.md)
+📖 [Quick Start](QUICKSTART.md) · 🎚️ [Audacity Integration](AUDACITY_INTEGRATION.md) · 🏗️ [Architecture](ARCHITECTURE.md) · 👨‍💻 [Developer Guide](DEVELOPER_GUIDE.md)
 
 ---
 
