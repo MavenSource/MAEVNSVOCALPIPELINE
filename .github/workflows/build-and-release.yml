@@ -263,7 +263,6 @@ jobs:
             libx11-dev \
             libxcomposite-dev \
             libxcursor-dev \
-            libxcursor-dev \
             libxext-dev \
             libxinerama-dev \
             libxrandr-dev \
