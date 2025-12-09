@@ -40,7 +40,7 @@ Visit the [**MAEVN Releases**](https://github.com/MavenSource/MAEVNSVOCALPIPELIN
 
 Each download package contains:
 - ✅ **Ready-to-use VST3 plugin** (+ AU for macOS)
-- ✅ **Pre-generated ONNX models** for instruments (808, hi-hats, snare, piano, synth)
+- ✅ **Pre-generated ONNX models** for instruments (808, Hi-Hats, snare, piano, synth)
 - ✅ **Professional FX presets** (RadioVocals, Dirty808, CinematicVocals, etc.)
 - ✅ **Complete documentation** (README, Quick Start Guide)
 - ✅ **Installation instructions** specific to your platform
