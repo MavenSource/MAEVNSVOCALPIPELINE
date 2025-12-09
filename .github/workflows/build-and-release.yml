@@ -98,8 +98,14 @@ jobs:
           fi
           
           # Copy Models and Presets
-          cp -r Models/* release/MAEVN-Windows/Models/
-          cp -r Presets/* release/MAEVN-Windows/Presets/
+          cp -r Models/* release/MAEVN-Windows/Models/ || true
+          if [ ! -d "release/MAEVN-Windows/Models" ] || [ -z "$(ls -A release/MAEVN-Windows/Models 2>/dev/null)" ]; then
+            echo "Warning: No model files were copied. 'Models/' directory is missing or empty."
+          fi
+          cp -r Presets/* release/MAEVN-Windows/Presets/ || true
+          if [ ! -d "release/MAEVN-Windows/Presets" ] || [ -z "$(ls -A release/MAEVN-Windows/Presets 2>/dev/null)" ]; then
+            echo "Warning: No preset files were copied. 'Presets/' directory is missing or empty."
+          fi
           
           # Copy documentation
           cp README.md release/MAEVN-Windows/
