@@ -53,6 +53,8 @@ Each download package contains:
 4. **Restart** your DAW
 5. **Load** MAEVN and start creating!
 
+📖 **For detailed installation instructions**, see the [**Download and Install Guide**](DOWNLOAD_AND_INSTALL.md)
+
 ### 📝 System Requirements
 
 | Platform | Minimum Requirements |
