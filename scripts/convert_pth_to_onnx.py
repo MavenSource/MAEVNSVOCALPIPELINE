@@ -17,6 +17,12 @@ Usage:
 import argparse
 import os
 import json
+import sys
+import io
+
+# Configure UTF-8 encoding for stdout to prevent UnicodeEncodeError
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 try:
     import torch
@@ -274,14 +280,14 @@ def export_to_onnx(model, output_path, model_type='tts', config=None):
         dynamic_axes=dynamic_axes
     )
     
-    print(f"✓ Model exported successfully to: {output_path}")
+    print(f"[OK] Model exported successfully to: {output_path}")
     
     # Verify ONNX model if onnx is available
     if ONNX_AVAILABLE:
         try:
             onnx_model = onnx.load(output_path)
             onnx.checker.check_model(onnx_model)
-            print("✓ ONNX model validation passed")
+            print("[OK] ONNX model validation passed")
         except Exception as e:
             print(f"Warning: ONNX validation failed: {e}")
     
@@ -336,17 +342,17 @@ def update_model_config(models_dir, model_name, model_path):
     config_path = os.path.join(models_dir, 'config.json')
     
     if os.path.exists(config_path):
-        with open(config_path, 'r') as f:
+        with open(config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
     else:
         config = {}
     
     config[model_name] = model_path
     
-    with open(config_path, 'w') as f:
+    with open(config_path, 'w', encoding='utf-8') as f:
         json.dump(config, f, indent=2)
     
-    print(f"✓ Updated config.json with {model_name}: {model_path}")
+    print(f"[OK] Updated config.json with {model_name}: {model_path}")
 
 
 def main():

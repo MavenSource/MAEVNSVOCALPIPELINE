@@ -21,6 +21,11 @@ from scipy import signal
 from scipy.io import wavfile
 import os
 import sys
+import io
+
+# Configure UTF-8 encoding for stdout to prevent UnicodeEncodeError
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Audio Constants
 SAMPLE_RATE = 44100
@@ -576,18 +581,18 @@ def main():
     print(f"BPM: {BPM}")
     print("-" * 60)
     print("Instruments used:")
-    print("  ✓ Synthesized Vocals (formant synthesis)")
-    print("  ✓ 808 Sub-Bass (with glides)")
-    print("  ✓ Hi-Hats (closed and open)")
-    print("  ✓ Snare/Clap")
-    print("  ✓ Piano Chords")
-    print("  ✓ FM Synth Pads")
+    print("  [OK] Synthesized Vocals (formant synthesis)")
+    print("  [OK] 808 Sub-Bass (with glides)")
+    print("  [OK] Hi-Hats (closed and open)")
+    print("  [OK] Snare/Clap")
+    print("  [OK] Piano Chords")
+    print("  [OK] FM Synth Pads")
     print("-" * 60)
     print("Effects applied:")
-    print("  ✓ Reverb (room simulation)")
-    print("  ✓ Compression (dynamics control)")
-    print("  ✓ Limiter (peak control)")
-    print("  ✓ Stereo panning")
+    print("  [OK] Reverb (room simulation)")
+    print("  [OK] Compression (dynamics control)")
+    print("  [OK] Limiter (peak control)")
+    print("  [OK] Stereo panning")
     print("=" * 60)
     
     return output_file
