@@ -24,7 +24,7 @@ import sys
 import io
 
 # Configure UTF-8 encoding for stdout to prevent UnicodeEncodeError
-if sys.stdout.encoding != 'utf-8':
+if not sys.stdout.encoding or sys.stdout.encoding.lower() not in ('utf-8', 'utf8'):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Audio Constants
