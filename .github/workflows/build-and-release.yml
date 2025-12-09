@@ -54,12 +54,22 @@ jobs:
       - name: Install JUCE
         run: |
           git clone --depth 1 --branch 7.0.9 https://github.com/juce-framework/JUCE.git ${{ github.workspace }}/JUCE
+          cd ${{ github.workspace }}/JUCE
+          $expected_commit = "c2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2" # Replace with actual commit hash for 7.0.9
+          $actual_commit = git rev-parse HEAD
+          if ($actual_commit -ne $expected_commit) { Write-Error "JUCE commit hash does not match expected value!"; exit 1 }
+          cd ${{ github.workspace }}
 
       - name: Download ONNX Runtime
         run: |
           $version = "1.16.3"
           $url = "https://github.com/microsoft/onnxruntime/releases/download/v$version/onnxruntime-win-x64-$version.zip"
+          $checksum_url = "https://github.com/microsoft/onnxruntime/releases/download/v$version/onnxruntime-win-x64-$version.zip.sha256"
           Invoke-WebRequest -Uri $url -OutFile onnxruntime.zip
+          Invoke-WebRequest -Uri $checksum_url -OutFile onnxruntime.zip.sha256
+          $expected_hash = (Get-Content onnxruntime.zip.sha256).Split(" ")[0]
+          $actual_hash = (Get-FileHash onnxruntime.zip -Algorithm SHA256).Hash.ToLower()
+          if ($actual_hash -ne $expected_hash.ToLower()) { Write-Error "ONNX Runtime checksum verification failed!"; exit 1 }
           Expand-Archive -Path onnxruntime.zip -DestinationPath ${{ github.workspace }}
           Rename-Item -Path "${{ github.workspace }}/onnxruntime-win-x64-$version" -NewName "onnxruntime"
 
